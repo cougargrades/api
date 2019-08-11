@@ -17,5 +17,6 @@ else {
 //let db = admin.firestore();
 
 exports.hello = functions.https.onRequest(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
     res.json('World!')
 })
