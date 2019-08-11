@@ -2,6 +2,7 @@ openapi: "3.0.0"
 info:
   version: 1.0.0
   title: "@cougargrades/api"
+  description: Public HTTP API for cougargrades.io. See more at: https://github.com/cougargrades/api
   license:
     name: MIT
 servers:
