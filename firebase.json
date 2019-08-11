@@ -1,8 +1,8 @@
 {
   "functions": {
     "predeploy": [
-      "npm --prefix \"$PROJECT_DIR/functions\" run lint"
+      "npm run lint"
     ],
-    "source": "functions"
+    "source": "."
   }
 }

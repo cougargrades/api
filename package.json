@@ -1,5 +1,5 @@
 {
-  "name": "@cougargrades/web.functions",
+  "name": "@cougargrades/api",
   "description": "Cloud Functions for Firebase",
   "main": "index.js",
   "scripts": {
