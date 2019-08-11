@@ -5,7 +5,24 @@ Serverless public developer HTTP API server for cougargrades.io
 cougar-grades is in private early development and the master branch will get very dirty as a result. This means commits probably won't work if cloned and tried building because undocumented changes could've been made.
 
 ## Building: API Server (Firebase Cloud Functions + Express.js)
-- `cd functions/`
 - `npm install`
 - `firebase serve --only functions`
 
+## Documentation
+Instructions and usage of the routes offered by the public API are documented in [openapi.yaml](openapi.yaml) and can be viewed for reading on [Github pages](https://cougargrades.github.io/api/).
+
+
+## Live API Server
+The configured baseurl is: `cougargrades.io/api`. However, the website located at `/` is a [progressive web app](https://developers.google.com/web/progressive-web-apps/) that will treat requests to `/api` as unknown when opened in a browser ([see configuration file](https://github.com/cougargrades/web/blob/master/firebase.json)). This is only a browser limitation when trying to browse a page. The actual API can still be reached like so:
+
+_With an HTTP request:_
+```bash
+curl https://cougargrades.io/api/hello
+# "World!"
+```
+
+_With code:_
+```javascript
+res = await fetch('/api/hello') // Fetch Response()
+data = await res.json() // "World!"
+```
