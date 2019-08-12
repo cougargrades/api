@@ -13,4 +13,133 @@ paths:
       summary: An example route used for testing
       responses:
         '200':
-          description: Reponds with `"world!"`
+          description: Responds with `"world!"`
+  /catalog:
+    get:
+      summary: Query against the course database
+      description: When provided with only the `department` parameter, this will return the available courses that this department has offerred. When provided both `department` and `catalogNumber` parameter, the course object is returned with its `sections` property populated.
+      parameters:
+        - name: department
+          in: query
+          description: "Department code to query with (Ex: `MATH`, `ENGL`)"
+          required: true
+          schema:
+            type: string
+        - name: catalogNumber
+          in: query
+          description: "Catlog number to query with (Ex: `2331`, `1304`)"
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: When provided both `department` and `catalogNumber` parameter, the course object is returned with its `sections` property populated. 
+          content: 
+            application/json:
+              schema: 
+                type: array
+                items:
+                  $ref: '#/components/schemas/CourseExtended'
+        '206':
+          description: When provided with only the `department` parameter, this will return the available courses that this department has offerred.
+          content: 
+            application/json:
+              schema: 
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+        '451':
+          description: "Course not found: A course with those arguments could not be found"
+        '452':
+          description: "Department not found: A department with those arguments could not be found"
+        '453':
+          description: "Insufficient arguments: Please include at least a `department` query parameter."
+        '500':
+          description: "Internal Server Error: The server has encountered a situation it doesn't know how to handle."
+components:
+  schemas:
+    Course:
+      type: object
+      properties:
+        department:
+          type: string
+          default: "COSC"
+        catalogNumber:
+          type: string
+          default: "1304"
+        description:
+          type: string
+          default: "C Programming"
+    CourseExtended:
+      type: object
+      properties:
+        department:
+          type: string
+          default: "COSC"
+        catalogNumber:
+          type: string
+          default: "1304"
+        description:
+          type: string
+          default: "C Programming"
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Section'
+    Section:
+      type: object
+      properties:
+        A:
+          type: integer
+          description: Number of As graded
+        B:
+          type: integer
+          description: Number of Bs graded
+        C:
+          type: integer
+          description: Number of Cs graded
+        D:
+          type: integer
+          description: Number of Ds graded
+        F:
+          type: integer
+          description: Number of Fs graded
+        Q:
+          type: integer
+          description: Number of students that withdrew from the course
+        sectionNumber:
+          type: integer
+          description: The section number of the lecture/graded/primary portion of the course (some lab sections are excluded).
+        semesterGPA:
+          type: number
+          description: Average GPA for the class for the semester
+        term:
+          type: integer
+          description: "Term code in the format: XXXXYY, where XXXX is the year, 01 is Spring, 02 is Summer, and 03 is Fall. <br>Example: 201803 -> Fall 2018"
+        termString:
+          type: string
+          description: "User-friendly form of the term/semester name. Example: Fall 2018"
+        instructorNames:
+          type: array
+          items:
+            $ref: '#/components/schemas/InstructorShallow'
+    InstructorShallow:
+      type: object
+      properties:
+        lastName:
+          type: string
+        firstName:
+          type: string
+        termSectionsTaught:
+          type: integer
+          description: Number of sections this instructor taught of this same course of this same term
+        termGPA:
+          type: number
+          description: Average GPA of all this instructor's sections, if they taught multiple
+        termGPAmax:
+          type: number
+          description: Maximum per-section GPA of all this instructor's sections, if they taught multiple
+        termGPAmin:
+          type: number
+          description: Minimum per-section GPA of all this instructor's sections, if they taught multiple
+        

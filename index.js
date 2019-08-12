@@ -32,7 +32,7 @@ exports.catalog = functions.https.onRequest(async (req, res) => {
                 .where('catalogNumber', '==', req.query.catalogNumber);
             let querySnap = await query.get();
             if(querySnap.empty) {
-                res.status(400).json({
+                res.status(451).json({
                     error: 'Course not found',
                     description: 'A course with those arguments could not be found'
                 });
@@ -65,7 +65,7 @@ exports.catalog = functions.https.onRequest(async (req, res) => {
                         return ordered;
                     });
                 Object.assign(results, { sections: docs })
-                res.json(results);
+                res.status(200).json(results);
             }
         }
         else if(req.query.department) {
@@ -75,7 +75,7 @@ exports.catalog = functions.https.onRequest(async (req, res) => {
                 .orderBy('catalogNumber', 'asc');
             let snapshot = await query.get();
             if(snapshot.empty) {
-                res.status(400).json({
+                res.status(452).json({
                     error: 'Department not found',
                     description: 'A department with those arguments could not be found'
                 });
@@ -92,11 +92,11 @@ exports.catalog = functions.https.onRequest(async (req, res) => {
                         })
                         return ordered;
                     });
-                res.json(docs);
+                res.status(206).json(docs);
             }
         }
         else {
-            res.status(400).json({
+            res.status(453).json({
                 error: 'Insufficient arguments',
                 description: 'Please include at least a `department` query parameter.'
             })
