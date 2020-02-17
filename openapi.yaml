@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 1.0.0
+  version: 1.1.0
   title: "@cougargrades/api"
   description: "Public HTTP API for cougargrades.io. <br>See more at: https://github.com/cougargrades/api"
   license:
@@ -39,7 +39,7 @@ paths:
               schema: 
                 type: array
                 items:
-                  $ref: '#/components/schemas/CourseExtended'
+                  $ref: '#/components/schemas/Course'
         '206':
           description: When provided with only the `department` parameter, this will return the available courses that this department has offerred.
           content: 
@@ -47,17 +47,68 @@ paths:
               schema: 
                 type: array
                 items:
-                  $ref: '#/components/schemas/Course'
-        '451':
+                  $ref: '#/components/schemas/ShallowCourse'
+        '460':
           description: "Course not found: A course with those arguments could not be found"
-        '452':
+        '461':
           description: "Department not found: A department with those arguments could not be found"
-        '453':
+        '462':
           description: "Insufficient arguments: Please include at least a `department` query parameter."
         '500':
           description: "Internal Server Error: The server has encountered a situation it doesn't know how to handle."
+  /instructors:
+    get:
+      summary: Query against the instructors database
+      description: When provided with only the `fullName` parameter, this will return the corresponding instructor by that name. When provided the `query` parameter, a list of up to 10 ShallowInstructors will be returned (this list may have zero entries).
+      parameters:
+        - name: fullName
+          in: query
+          description: "Instructor's `fullName` property to reference by (case-sensitive)."
+          required: false
+          schema:
+            type: string
+        - name: query
+          in: query
+          description: "A term to search against all names (case-insensitive)."
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response for the request for an individual instructor, provided the `fullName` parameter.
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Instructor'
+        '206':
+          description: Successful response for the search term against all instructors by name, provided the `query` parameter. Response array may not have entries.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShallowInstructor'
+
 components:
   schemas:
+    ShallowCourse:
+      type: object
+      properties:
+        department:
+          type: string
+          default: "COSC"
+        catalogNumber:
+          type: string
+          default: "1304"
+        description:
+          type: string
+          default: "C Programming"
+        sectionCount:
+          type: integer
+          default: "159"
+        GPA:
+          $ref: '#/components/schemas/GPA'
     Course:
       type: object
       properties:
@@ -70,18 +121,11 @@ components:
         description:
           type: string
           default: "C Programming"
-    CourseExtended:
-      type: object
-      properties:
-        department:
-          type: string
-          default: "COSC"
-        catalogNumber:
-          type: string
-          default: "1304"
-        description:
-          type: string
-          default: "C Programming"
+        sectionCount:
+          type: integer
+          default: "159"
+        GPA:
+          $ref: '#/components/schemas/GPA'
         sections:
           type: array
           items:
@@ -122,8 +166,8 @@ components:
         instructorNames:
           type: array
           items:
-            $ref: '#/components/schemas/InstructorShallow'
-    InstructorShallow:
+            $ref: '#/components/schemas/ShallowTermInstructor'
+    ShallowTermInstructor:
       type: object
       properties:
         lastName:
@@ -142,4 +186,72 @@ components:
         termGPAmin:
           type: number
           description: Minimum per-section GPA of all this instructor's sections, if they taught multiple
-        
+    ShallowInstructor:
+      type: object
+      properties:
+        firstName:
+          type: string
+          default: "Robert"
+        lastName:
+          type: string
+          default: "Buzzanco"
+        fullName:
+          type: string
+          default: "Robert Buzzanco"
+        sections_count:
+          type: integer
+          default: 57
+        courses_count:
+          type: integer
+          default: 10
+        GPA:
+          $ref: '#/components/schemas/GPA'
+    Instructor:
+      type: object
+      properties:
+        firstName:
+          type: string
+          default: "Robert"
+        lastName:
+          type: string
+          default: "Buzzanco"
+        fullName:
+          type: string
+          default: "Robert Buzzanco"
+        sections_count:
+          type: integer
+          default: 57
+        courses_count:
+          type: integer
+          default: 10
+        courses:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShallowCourse'
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Section'
+        GPA:
+          $ref: '#/components/schemas/GPA'
+    GPA:
+      type: object
+      properties:
+        average:
+          type: number
+          default: 3.4697
+        maximum:
+          type: number
+          default: 3.914
+        median:
+          type: number
+          default: 3.59625
+        minimum:
+          type: number
+          default: 2.593
+        range:
+          type: number
+          default: 1.3210000000000002
+        standardDeviation:
+          type: number
+          default: 0.33374125380269654
