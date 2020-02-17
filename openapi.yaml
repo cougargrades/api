@@ -198,6 +198,8 @@ components:
         fullName:
           type: string
           default: "Robert Buzzanco"
+        departments:
+          type: object
         sections_count:
           type: integer
           default: 57
@@ -224,6 +226,8 @@ components:
         courses_count:
           type: integer
           default: 10
+        departments:
+          type: object
         courses:
           type: array
           items:
