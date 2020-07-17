@@ -20,6 +20,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
  * Primary app routes.
  */
 app.get('/', homeController.index);
-app.get('/login', userController.getLogin);
+app.get('/user', userController.getUser);
+app.get('/user/secret', userController.getSecret);
 
 export default app;
