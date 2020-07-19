@@ -9,4 +9,3 @@ app.use(errorHandler());
 export const api = functions
   .runWith({ memory: '256MB', timeoutSeconds: 120 })
   .https.onRequest(app);
-
