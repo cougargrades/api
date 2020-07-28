@@ -34,7 +34,7 @@ export const whenUploadQueueAdded = functions
       snapshot.data()['TOTAL_DROPPED'],
       snapshot.data()['AVG_GPA'],
     );
-    db.runTransaction(async (txn) => {
+    const transaction = db.runTransaction(async (txn) => {
       // create all references (to locations that may not exist)
       const courseRef = db.collection('catalog').doc(record.getCourseMoniker());
       const sectionRef = db
@@ -237,4 +237,31 @@ export const whenUploadQueueAdded = functions
       await txn.delete(selfRef);
       return txn;
     });
+
+    try {
+      await transaction;
+    } catch (err) {
+      // Error: 10 ABORTED: Too much contention on these documents. Please try again.
+      // see: https://github.com/cougargrades/api-2.0.0/issues/24
+      if (err.code === 10) {
+        // If the transaction timed out due to contention, add it back to the queue up to 3 times.
+        const retryCount = snapshot.data().__retryCount || 0;
+        // please work, i dont want a recursive mess
+        if (retryCount < 3) {
+          // idk how we would fail to delete a unique doc then create a unique doc, so imma leave it
+          await db.runTransaction(async (txn) => {
+            // new document that will try this whole process again while this execution can terminate
+            const survivorRef = db.collection('upload_queue').doc();
+            await txn.delete(selfRef);
+            await txn.set(
+              survivorRef,
+              Object.assign(snapshot.data(), { __retryCount: retryCount + 1 }),
+            );
+          });
+        } else {
+          throw new Error(`Re-Queued too many times: ${snapshot.ref.path}`);
+        }
+      }
+    }
+    return true;
   });
