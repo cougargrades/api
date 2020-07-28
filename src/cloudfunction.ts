@@ -9,3 +9,5 @@ app.use(errorHandler());
 export const api = functions
   .runWith({ memory: '256MB', timeoutSeconds: 120 })
   .https.onRequest(app);
+
+export { whenUploadQueueAdded2 } from './triggers';

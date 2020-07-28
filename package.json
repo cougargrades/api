@@ -21,7 +21,7 @@
     "node": "10"
   },
   "dependencies": {
-    "@cougargrades/types": "0.0.26",
+    "@cougargrades/types": "0.0.30",
     "@types/express-serve-static-core": "^4.17.8",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
