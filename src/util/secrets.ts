@@ -1,6 +1,12 @@
 import dotenv from 'dotenv';
 import * as fs from 'fs';
 
+// Identify whether or not we're on GCP
+// See: https://cloud.google.com/functions/docs/env-var#nodejs_10_and_subsequent_runtimes
+export const IS_HOSTED =
+  Object.keys(process.env).includes('FUNCTION_TARGET') &&
+  typeof process.env.FUNCTION_TARGET === 'string';
+
 // Setup
 if (fs.existsSync('.env')) {
   console.debug('Using .env file to supply config environment variables');
@@ -11,16 +17,11 @@ if (fs.existsSync('.env')) {
   );
 }
 export const ENVIRONMENT = process.env.NODE_ENV;
-//const prod = ENVIRONMENT === 'production'; // Anything else is treated as 'dev'
 
 // Secrets
-export const GOOGLE_APPLICATION_CREDENTIALS =
-  process.env['GOOGLE_APPLICATION_CREDENTIALS'];
-export const FIREBASE_PROJECT_ID = JSON.parse(
-  fs.readFileSync('.firebaserc', { encoding: 'utf-8' }),
-)['projects']['default'];
+export const GOOGLE_APPLICATION_CREDENTIALS = IS_HOSTED
+  ? undefined
+  : process.env['GOOGLE_APPLICATION_CREDENTIALS'];
+if (IS_HOSTED) delete process.env['GOOGLE_APPLICATION_CREDENTIALS']; // prevent firebase SDK from using environment variable to source credentials
 
-// if (!SESSION_SECRET) {
-//   console.error('No client secret. Set SESSION_SECRET environment variable.');
-//   process.exit(1);
-// }
+export const FIREBASE_PROJECT_ID = process.env['FIREBASE_PROJECT_ID'];

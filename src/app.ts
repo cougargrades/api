@@ -1,7 +1,7 @@
 import express from 'express';
 import compression from 'compression'; // compresses requests
 import bodyParser from 'body-parser';
-//import { MONGODB_URI, SESSION_SECRET } from './util/secrets';
+import { rewriteFirebaseHosting } from './util/middleware';
 
 // Controllers (route handlers)
 import * as homeController from './controllers/home';
@@ -12,6 +12,7 @@ const app = express();
 
 // Express configuration
 app.set('port', process.env.PORT || 3000);
+app.use(rewriteFirebaseHosting);
 app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
