@@ -9,12 +9,10 @@ export const IS_HOSTED =
 
 // Setup
 if (fs.existsSync('.env')) {
-  console.debug('Using .env file to supply config environment variables');
+  //console.debug('Using .env file to supply config environment variables');
   dotenv.config({ path: '.env' });
 } else {
-  console.debug(
-    'Using .env.example file to supply config environment variables',
-  );
+  //console.debug('Using .env.example file to supply config environment variables');
 }
 export const ENVIRONMENT = process.env.NODE_ENV;
 
