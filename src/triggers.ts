@@ -12,7 +12,7 @@ import {
 const { FieldValue: FieldValue } = firestore;
 const db = firebase.firestore();
 
-export const whenUploadQueueAdded2 = functions
+export const whenUploadQueueAdded = functions
   .runWith({ memory: '512MB', timeoutSeconds: 540 })
   .firestore.document('upload_queue/{qid}')
   .onCreate(async (snapshot, context) => {
