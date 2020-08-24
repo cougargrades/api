@@ -3,7 +3,10 @@ import firebase from '../util/firebase';
 import { Util, Course, Section, Instructor } from '@cougargrades/types';
 import { validationResult } from 'express-validator';
 
-export async function getCourses(req: Request<any, any, any, { limit: number; offset: number }>, res: Response) {
+export async function getCourses(
+  req: Request<any, any, any, { limit: number; offset: number }>,
+  res: Response,
+) {
   const errors = validationResult(req);
   if (!errors.isEmpty())
     return res.status(400).json({ errors: errors.array() });
@@ -19,7 +22,10 @@ export async function getCourses(req: Request<any, any, any, { limit: number; of
   return res.json(query.docs.map((item) => item.id));
 }
 
-export async function getCourseByName(req: Request<{ courseName: string }>, res: Response) {
+export async function getCourseByName(
+  req: Request<{ courseName: string }>,
+  res: Response,
+) {
   const doc = await firebase
     .firestore()
     .collection('catalog')
@@ -33,7 +39,10 @@ export async function getCourseByName(req: Request<{ courseName: string }>, res:
   }
 }
 
-export async function getSectionsForCourse(req: Request<{ courseName: string }>, res: Response) {
+export async function getSectionsForCourse(
+  req: Request<{ courseName: string }>,
+  res: Response,
+) {
   const doc = await firebase
     .firestore()
     .collection('catalog')
@@ -53,7 +62,10 @@ export async function getSectionsForCourse(req: Request<{ courseName: string }>,
   }
 }
 
-export async function getInstructorsForCourse(req: Request<{ courseName: string }>, res: Response) {
+export async function getInstructorsForCourse(
+  req: Request<{ courseName: string }>,
+  res: Response,
+) {
   const doc = await firebase
     .firestore()
     .collection('catalog')
