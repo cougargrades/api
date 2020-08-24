@@ -3,7 +3,10 @@ import firebase from '../util/firebase';
 import { Util, Instructor } from '@cougargrades/types';
 import { validationResult } from 'express-validator';
 
-export async function getInstructors(req: Request<any, any, any, { limit: number; offset: number }>, res: Response) {
+export async function getInstructors(
+  req: Request<any, any, any, { limit: number; offset: number }>,
+  res: Response,
+) {
   const errors = validationResult(req);
   if (!errors.isEmpty())
     return res.status(400).json({ errors: errors.array() });
@@ -19,7 +22,10 @@ export async function getInstructors(req: Request<any, any, any, { limit: number
   return res.json(query.docs.map((item) => item.id));
 }
 
-export async function getInstructorByName(req: Request<{ instructorName: string }>, res: Response) {
+export async function getInstructorByName(
+  req: Request<{ instructorName: string }>,
+  res: Response,
+) {
   const doc = await firebase
     .firestore()
     .collection('instructors')

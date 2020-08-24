@@ -39,21 +39,30 @@ app.get(
   catalogController.getCourses,
 );
 app.get('/catalog/:courseName', catalogController.getCourseByName);
-app.get('/catalog/:courseName/sections', catalogController.getSectionsForCourse);
-app.get('/catalog/:courseName/instructors', catalogController.getInstructorsForCourse);
+app.get(
+  '/catalog/:courseName/sections',
+  catalogController.getSectionsForCourse,
+);
+app.get(
+  '/catalog/:courseName/instructors',
+  catalogController.getInstructorsForCourse,
+);
 app.get(
   '/instructors',
   [
     query('limit')
       .isInt()
-      .customSanitizer(x => sanitizer.integer(x, 10, 0, 100)),
+      .customSanitizer((x) => sanitizer.integer(x, 10, 0, 100)),
     query('offset')
       .isInt()
-      .customSanitizer(x => sanitizer.integer(x, 0, 0)),
+      .customSanitizer((x) => sanitizer.integer(x, 0, 0)),
   ],
   instructorController.getInstructors,
 );
-app.get('/instructors/:instructorName', instructorController.getInstructorByName);
+app.get(
+  '/instructors/:instructorName',
+  instructorController.getInstructorByName,
+);
 app.get('/', (req: Request, res: Response) => res.json(getRoutes(app)));
 
 export default app;
