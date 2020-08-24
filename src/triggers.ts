@@ -1,6 +1,5 @@
 import * as functions from 'firebase-functions';
 import firebase from './util/firebase';
-import { firestore } from 'firebase-admin';
 import {
   GradeDistributionCSVRow,
   Course,
@@ -9,6 +8,7 @@ import {
   Util,
   GPA,
 } from '@cougargrades/types';
+import { firestore } from 'firebase-admin';
 const { FieldValue: FieldValue } = firestore;
 const db = firebase.firestore();
 
@@ -79,7 +79,7 @@ export const whenUploadQueueAdded = functions
       // if course doesn't exist
       if (!courseSnap.exists) {
         // create default course with record data
-        await txn.set(courseRef, record.toCourse());
+        await txn.set(courseRef, Object.assign({}, record.toCourse()));
         courseData = Object.assign({}, record.toCourse());
       } else {
         // if course already exists
@@ -114,7 +114,7 @@ export const whenUploadQueueAdded = functions
       // if instructor doesn't exist
       if (!instructorSnap.exists) {
         // create default instructor with record data
-        await txn.set(instructorRef, record.toInstructor());
+        await txn.set(instructorRef, Object.assign({}, record.toInstructor()));
         instructorData = Object.assign({}, record.toInstructor());
       } else {
         // if instructor already exists
@@ -164,10 +164,10 @@ export const whenUploadQueueAdded = functions
       }
 
       /**
-         * this extra temporary variable nonsense is necessary because 
-         * Javascript doesn't let you use template strings when defining 
+         * this extra temporary variable nonsense is necessary because
+         * Javascript doesn't let you use template strings when defining
          * the key of a literal object.
-         * 
+         *
          * Example (valid):
                 {
                     'hello world': 2
@@ -241,6 +241,7 @@ export const whenUploadQueueAdded = functions
     try {
       await transaction;
     } catch (err) {
+      console.error(err);
       // Error: 10 ABORTED: Too much contention on these documents. Please try again.
       // see: https://github.com/cougargrades/api-2.0.0/issues/24
       if (err.code === 10) {
@@ -263,5 +264,4 @@ export const whenUploadQueueAdded = functions
         }
       }
     }
-    return true;
   });

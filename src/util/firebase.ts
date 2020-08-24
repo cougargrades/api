@@ -1,5 +1,5 @@
 import * as admin from 'firebase-admin';
-import { FIREBASE_PROJECT_ID } from '../util/secrets';
+import { FIREBASE_PROJECT_ID } from './secrets';
 //import * as functions from 'firebase-functions';
 //import 'firebase-functions';
 
