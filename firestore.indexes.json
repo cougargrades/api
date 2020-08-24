@@ -20,7 +20,7 @@
       "fields": [
         {
           "fieldPath": "department",
-          "arrayConfig": "ASCENDING"
+          "order": "ASCENDING"
         },
         {
           "fieldPath": "catalogNumber",
@@ -34,7 +34,7 @@
       "fields": [
         {
           "fieldPath": "lastName",
-          "arrayConfig": "ASCENDING"
+          "order": "ASCENDING"
         },
         {
           "fieldPath": "firstName",
