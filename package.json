@@ -11,7 +11,7 @@
     "serve": "node dist/server.js",
     "serve-debug": "nodemon --inspect dist/server.js",
     "start": "npm run serve",
-    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node,Firebase\" -c \"cyan.bold,green.bold,magenta.bold\" \"npm run watch-ts\" \"npm run watch-node\" \"firebase emulators:start\"",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node,Firebase\" -c \"cyan.bold,green.bold,magenta.bold\" \"npm run watch-ts\" \"npm run watch-node\" \"firebase emulators:start --import=./.firestore-data\"",
     "watch-debug": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node,Firebase\" -c \"cyan.bold,green.bold,magenta.bold\" \"npm run watch-ts\" \"npm run serve-debug\" \"firebase emulators:start\"",
     "watch-node": "nodemon dist/server.js",
     "watch-ts": "tsc -w"
