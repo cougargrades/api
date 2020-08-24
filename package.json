@@ -21,15 +21,17 @@
     "node": "10"
   },
   "dependencies": {
-    "@cougargrades/types": "0.0.30",
+    "@cougargrades/types": "0.0.31",
     "@types/express-serve-static-core": "^4.17.8",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
     "dotenv": "^8.2.0",
     "errorhandler": "^1.5.1",
     "express": "^4.17.1",
+    "express-validator": "^6.6.1",
     "firebase-admin": "^9.0.0",
-    "firebase-functions": "^3.8.0"
+    "firebase-functions": "^3.8.0",
+    "get-routes": "^2.0.6"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.0",
