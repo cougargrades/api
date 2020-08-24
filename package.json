@@ -30,7 +30,7 @@
     "express": "^4.17.1",
     "express-validator": "^6.6.1",
     "firebase-admin": "^9.0.0",
-    "firebase-functions": "^3.8.0",
+    "firebase-functions": "^3.11.0",
     "get-routes": "^2.0.6"
   },
   "devDependencies": {
