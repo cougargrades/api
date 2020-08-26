@@ -79,8 +79,8 @@ export const whenUploadQueueAdded = functions
       // if course doesn't exist
       if (!courseSnap.exists) {
         // create default course with record data
-        await txn.set(courseRef, Object.assign({}, record.toCourse()));
-        courseData = Object.assign({}, record.toCourse());
+        await txn.set(courseRef, JSON.parse(JSON.stringify(record.toCourse())));
+        courseData = record.toCourse();
       } else {
         // if course already exists
         // save real course data
@@ -91,7 +91,7 @@ export const whenUploadQueueAdded = functions
       if (!sectionSnap.exists) {
         // add section to course with record data (save reference)
         // insert instructorRef and courseRef
-        const t = Object.assign(record.toSection(), {
+        const t = Object.assign(JSON.parse(JSON.stringify(record.toSection())), {
           instructors: [instructorRef],
           course: courseRef,
         });
@@ -114,8 +114,8 @@ export const whenUploadQueueAdded = functions
       // if instructor doesn't exist
       if (!instructorSnap.exists) {
         // create default instructor with record data
-        await txn.set(instructorRef, Object.assign({}, record.toInstructor()));
-        instructorData = Object.assign({}, record.toInstructor());
+        await txn.set(instructorRef, JSON.parse(JSON.stringify(record.toInstructor())));
+        instructorData = record.toInstructor();
       } else {
         // if instructor already exists
         // save instructor course data
