@@ -144,6 +144,9 @@ export const whenUploadQueueAdded = functions
           courseData.enrollment.totalF += record.toCourse().enrollment.totalF;
           courseData.enrollment.totalQ += record.toCourse().enrollment.totalQ;
           courseData.enrollment.totalEnrolled += record.toCourse().enrollment.totalEnrolled;
+
+          courseData.firstTaught = Math.min(courseData.firstTaught, record.toCourse().firstTaught);
+          courseData.lastTaught = Math.max(courseData.lastTaught, record.toCourse().lastTaught);
         }
 
         await txn.update(courseRef, {
@@ -168,7 +171,9 @@ export const whenUploadQueueAdded = functions
           'enrollment.totalD': courseData.enrollment.totalD,
           'enrollment.totalF': courseData.enrollment.totalF,
           'enrollment.totalQ': courseData.enrollment.totalQ,
-          'enrollment.totalEnrolled': courseData.enrollment.totalEnrolled
+          'enrollment.totalEnrolled': courseData.enrollment.totalEnrolled,
+          'firstTaught': courseData.firstTaught,
+          'lastTaught': courseData.lastTaught,
           // TODO: median
         });
       } else {
