@@ -136,6 +136,14 @@ export const whenUploadQueueAdded = functions
         // if the section didn't exist already, update all the counters for this Course
         if(courseSnap.exists) {
           if (record.AVG_GPA !== undefined) courseData.GPA.include(record.AVG_GPA);
+
+          courseData.enrollment.totalA += record.toCourse().enrollment.totalA;
+          courseData.enrollment.totalB += record.toCourse().enrollment.totalB;
+          courseData.enrollment.totalC += record.toCourse().enrollment.totalC;
+          courseData.enrollment.totalD += record.toCourse().enrollment.totalD;
+          courseData.enrollment.totalF += record.toCourse().enrollment.totalF;
+          courseData.enrollment.totalQ += record.toCourse().enrollment.totalQ;
+          courseData.enrollment.totalEnrolled += record.toCourse().enrollment.totalEnrolled;
         }
 
         await txn.update(courseRef, {
@@ -154,6 +162,13 @@ export const whenUploadQueueAdded = functions
           'GPA.maximum': courseData.GPA._mmr.maximum,
           'GPA.minimum': courseData.GPA._mmr.minimum,
           'GPA.range': courseData.GPA._mmr.range,
+          'enrollment.totalA': courseData.enrollment.totalA,
+          'enrollment.totalB': courseData.enrollment.totalB,
+          'enrollment.totalC': courseData.enrollment.totalC,
+          'enrollment.totalD': courseData.enrollment.totalD,
+          'enrollment.totalF': courseData.enrollment.totalF,
+          'enrollment.totalQ': courseData.enrollment.totalQ,
+          'enrollment.totalEnrolled': courseData.enrollment.totalEnrolled
           // TODO: median
         });
       } else {
@@ -205,6 +220,14 @@ export const whenUploadQueueAdded = functions
         // update GPA statistics
         if(instructorSnap.exists) {
           if (record.AVG_GPA !== undefined) instructorData.GPA.include(record.AVG_GPA);
+
+          instructorData.enrollment.totalA += record.toInstructor().enrollment.totalA;
+          instructorData.enrollment.totalB += record.toInstructor().enrollment.totalB;
+          instructorData.enrollment.totalC += record.toInstructor().enrollment.totalC;
+          instructorData.enrollment.totalD += record.toInstructor().enrollment.totalD;
+          instructorData.enrollment.totalF += record.toInstructor().enrollment.totalF;
+          instructorData.enrollment.totalQ += record.toInstructor().enrollment.totalQ;
+          instructorData.enrollment.totalEnrolled += record.toInstructor().enrollment.totalEnrolled;
         }
         const toUpdate: any = {
           courses: FieldValue.arrayUnion(courseRef),
@@ -226,6 +249,13 @@ export const whenUploadQueueAdded = functions
           'GPA.maximum': instructorData.GPA._mmr.maximum,
           'GPA.minimum': instructorData.GPA._mmr.minimum,
           'GPA.range': instructorData.GPA._mmr.range,
+          'enrollment.totalA': instructorData.enrollment.totalA,
+          'enrollment.totalB': instructorData.enrollment.totalB,
+          'enrollment.totalC': instructorData.enrollment.totalC,
+          'enrollment.totalD': instructorData.enrollment.totalD,
+          'enrollment.totalF': instructorData.enrollment.totalF,
+          'enrollment.totalQ': instructorData.enrollment.totalQ,
+          'enrollment.totalEnrolled': instructorData.enrollment.totalEnrolled
           // TODO: median
         };
         // update department count, initialize count if does not exist
