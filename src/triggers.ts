@@ -5,7 +5,7 @@ import {
   Course,
   //Section,
   Instructor,
-  Util
+  Util,
 } from '@cougargrades/types';
 import { firestore } from 'firebase-admin';
 const { FieldValue: FieldValue } = firestore;
@@ -90,10 +90,13 @@ export const whenUploadQueueAdded = functions
       if (!sectionSnap.exists) {
         // add section to course with record data (save reference)
         // insert instructorRef and courseRef
-        const t = Object.assign(JSON.parse(JSON.stringify(record.toSection())), {
-          instructors: [instructorRef],
-          course: courseRef,
-        });
+        const t = Object.assign(
+          JSON.parse(JSON.stringify(record.toSection())),
+          {
+            instructors: [instructorRef],
+            course: courseRef,
+          },
+        );
         await txn.set(sectionRef, t);
         //sectionData = Object.assign({}, t);
       } else {
@@ -113,7 +116,10 @@ export const whenUploadQueueAdded = functions
       // if instructor doesn't exist
       if (!instructorSnap.exists) {
         // create default instructor with record data
-        await txn.set(instructorRef, JSON.parse(JSON.stringify(record.toInstructor())));
+        await txn.set(
+          instructorRef,
+          JSON.parse(JSON.stringify(record.toInstructor())),
+        );
         instructorData = record.toInstructor();
       } else {
         // if instructor already exists
@@ -134,8 +140,9 @@ export const whenUploadQueueAdded = functions
       // TL;DR dont double-count sections with multiple instructors
       if (!sectionSnap.exists) {
         // if the section didn't exist already, update all the counters for this Course
-        if(courseSnap.exists) {
-          if (record.AVG_GPA !== undefined) courseData.GPA.include(record.AVG_GPA);
+        if (courseSnap.exists) {
+          if (record.AVG_GPA !== undefined)
+            courseData.GPA.include(record.AVG_GPA);
 
           courseData.enrollment.totalA += record.toCourse().enrollment.totalA;
           courseData.enrollment.totalB += record.toCourse().enrollment.totalB;
@@ -145,8 +152,14 @@ export const whenUploadQueueAdded = functions
           courseData.enrollment.totalQ += record.toCourse().enrollment.totalQ;
           courseData.enrollment.totalEnrolled += record.toCourse().enrollment.totalEnrolled;
 
-          courseData.firstTaught = Math.min(courseData.firstTaught, record.toCourse().firstTaught);
-          courseData.lastTaught = Math.max(courseData.lastTaught, record.toCourse().lastTaught);
+          courseData.firstTaught = Math.min(
+            courseData.firstTaught,
+            record.toCourse().firstTaught,
+          );
+          courseData.lastTaught = Math.max(
+            courseData.lastTaught,
+            record.toCourse().lastTaught,
+          );
         }
 
         await txn.update(courseRef, {
@@ -157,7 +170,8 @@ export const whenUploadQueueAdded = functions
           'GPA._average.sum': courseData.GPA._average.sum,
           'GPA.average': courseData.GPA._average.value(),
           'GPA._standardDeviation.n': courseData.GPA._standardDeviation.n,
-          'GPA._standardDeviation.delta': courseData.GPA._standardDeviation.delta,
+          'GPA._standardDeviation.delta':
+            courseData.GPA._standardDeviation.delta,
           'GPA._standardDeviation.mean': courseData.GPA._standardDeviation.mean,
           'GPA._standardDeviation.M2': courseData.GPA._standardDeviation.M2,
           'GPA._standardDeviation.ddof': courseData.GPA._standardDeviation.ddof,
@@ -172,8 +186,8 @@ export const whenUploadQueueAdded = functions
           'enrollment.totalF': courseData.enrollment.totalF,
           'enrollment.totalQ': courseData.enrollment.totalQ,
           'enrollment.totalEnrolled': courseData.enrollment.totalEnrolled,
-          'firstTaught': courseData.firstTaught,
-          'lastTaught': courseData.lastTaught,
+          firstTaught: courseData.firstTaught,
+          lastTaught: courseData.lastTaught,
           // TODO: median
         });
       } else {
@@ -223,8 +237,9 @@ export const whenUploadQueueAdded = functions
         )
       ) {
         // update GPA statistics
-        if(instructorSnap.exists) {
-          if (record.AVG_GPA !== undefined) instructorData.GPA.include(record.AVG_GPA);
+        if (instructorSnap.exists) {
+          if (record.AVG_GPA !== undefined)
+            instructorData.GPA.include(record.AVG_GPA);
 
           instructorData.enrollment.totalA += record.toInstructor().enrollment.totalA;
           instructorData.enrollment.totalB += record.toInstructor().enrollment.totalB;
@@ -246,10 +261,12 @@ export const whenUploadQueueAdded = functions
           'GPA.average': instructorData.GPA._average.value(),
           'GPA._standardDeviation.n': instructorData.GPA._standardDeviation.n,
           'GPA._standardDeviation.delta':
-          instructorData.GPA._standardDeviation.delta,
-          'GPA._standardDeviation.mean': instructorData.GPA._standardDeviation.mean,
+            instructorData.GPA._standardDeviation.delta,
+          'GPA._standardDeviation.mean':
+            instructorData.GPA._standardDeviation.mean,
           'GPA._standardDeviation.M2': instructorData.GPA._standardDeviation.M2,
-          'GPA._standardDeviation.ddof': instructorData.GPA._standardDeviation.ddof,
+          'GPA._standardDeviation.ddof':
+            instructorData.GPA._standardDeviation.ddof,
           'GPA.standardDeviation': instructorData.GPA._standardDeviation.value(),
           'GPA.maximum': instructorData.GPA._mmr.maximum,
           'GPA.minimum': instructorData.GPA._mmr.minimum,
@@ -260,7 +277,7 @@ export const whenUploadQueueAdded = functions
           'enrollment.totalD': instructorData.enrollment.totalD,
           'enrollment.totalF': instructorData.enrollment.totalF,
           'enrollment.totalQ': instructorData.enrollment.totalQ,
-          'enrollment.totalEnrolled': instructorData.enrollment.totalEnrolled
+          'enrollment.totalEnrolled': instructorData.enrollment.totalEnrolled,
           // TODO: median
         };
         // update department count, initialize count if does not exist

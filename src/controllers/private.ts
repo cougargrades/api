@@ -4,9 +4,9 @@ import { GradeDistributionCSVRow } from '@cougargrades/types';
 
 export async function getSelfToken(req: Request, res: Response) {
   try {
-    let access_token = req.get('X-Access-Token'); // retrieves the X-Access-Token header field
-    let doc = firebase.firestore().collection('tokens').doc(access_token!);
-    let snapshot = await doc.get();
+    const access_token = req.get('X-Access-Token'); // retrieves the X-Access-Token header field
+    const doc = firebase.firestore().collection('tokens').doc(access_token!);
+    const snapshot = await doc.get();
     if (!snapshot.exists) {
       return res.sendStatus(404);
     } else {
@@ -23,7 +23,7 @@ export async function uploadRecord(
   res: Response,
 ) {
   try {
-    let record = new GradeDistributionCSVRow(
+    const record = new GradeDistributionCSVRow(
       req.body.TERM,
       req.body.SUBJECT,
       req.body.CATALOG_NBR,
@@ -40,7 +40,7 @@ export async function uploadRecord(
       req.body.AVG_GPA,
     );
 
-    let doc = await firebase
+    const doc = await firebase
       .firestore()
       .collection('upload_queue')
       .add(Object.assign({}, record));
