@@ -5,8 +5,7 @@ import {
   Course,
   //Section,
   Instructor,
-  Util,
-  GPA,
+  Util
 } from '@cougargrades/types';
 import { firestore } from 'firebase-admin';
 const { FieldValue: FieldValue } = firestore;
@@ -131,28 +130,30 @@ export const whenUploadQueueAdded = functions
       ////
 
       // update GPA statistics
-      const courseGPA = GPA.prototype.cloneFrom(courseData.GPA);
-      if (record.AVG_GPA !== undefined) courseGPA.include(record.AVG_GPA);
       // only update course data if this section doesnt already exist
       // TL;DR dont double-count sections with multiple instructors
       if (!sectionSnap.exists) {
         // if the section didn't exist already, update all the counters for this Course
+        if(courseSnap.exists) {
+          if (record.AVG_GPA !== undefined) courseData.GPA.include(record.AVG_GPA);
+        }
+
         await txn.update(courseRef, {
           instructors: FieldValue.arrayUnion(instructorRef),
           sections: FieldValue.arrayUnion(sectionRef),
           sectionCount: courseData.sectionCount + 1,
-          'GPA._average.n': courseGPA._average.n,
-          'GPA._average.sum': courseGPA._average.sum,
-          'GPA.average': courseGPA._average.value(),
-          'GPA._standardDeviation.n': courseGPA._standardDeviation.n,
-          'GPA._standardDeviation.delta': courseGPA._standardDeviation.delta,
-          'GPA._standardDeviation.mean': courseGPA._standardDeviation.mean,
-          'GPA._standardDeviation.M2': courseGPA._standardDeviation.M2,
-          'GPA._standardDeviation.ddof': courseGPA._standardDeviation.ddof,
-          'GPA.standardDeviation': courseGPA._standardDeviation.value(),
-          'GPA.maximum': courseGPA._mmr.maximum,
-          'GPA.minimum': courseGPA._mmr.minimum,
-          'GPA.range': courseGPA._mmr.range,
+          'GPA._average.n': courseData.GPA._average.n,
+          'GPA._average.sum': courseData.GPA._average.sum,
+          'GPA.average': courseData.GPA._average.value(),
+          'GPA._standardDeviation.n': courseData.GPA._standardDeviation.n,
+          'GPA._standardDeviation.delta': courseData.GPA._standardDeviation.delta,
+          'GPA._standardDeviation.mean': courseData.GPA._standardDeviation.mean,
+          'GPA._standardDeviation.M2': courseData.GPA._standardDeviation.M2,
+          'GPA._standardDeviation.ddof': courseData.GPA._standardDeviation.ddof,
+          'GPA.standardDeviation': courseData.GPA._standardDeviation.value(),
+          'GPA.maximum': courseData.GPA._mmr.maximum,
+          'GPA.minimum': courseData.GPA._mmr.minimum,
+          'GPA.range': courseData.GPA._mmr.range,
           // TODO: median
         });
       } else {
@@ -202,8 +203,9 @@ export const whenUploadQueueAdded = functions
         )
       ) {
         // update GPA statistics
-        const instructorGPA = GPA.prototype.cloneFrom(instructorData.GPA);
-        if (record.AVG_GPA !== undefined) instructorGPA.include(record.AVG_GPA);
+        if(instructorSnap.exists) {
+          if (record.AVG_GPA !== undefined) instructorData.GPA.include(record.AVG_GPA);
+        }
         const toUpdate: any = {
           courses: FieldValue.arrayUnion(courseRef),
           courses_count: hasTaught()
@@ -211,19 +213,19 @@ export const whenUploadQueueAdded = functions
             : FieldValue.increment(1),
           sections: FieldValue.arrayUnion(sectionRef),
           sections_count: FieldValue.increment(1),
-          'GPA._average.n': instructorGPA._average.n,
-          'GPA._average.sum': instructorGPA._average.sum,
-          'GPA.average': instructorGPA._average.value(),
-          'GPA._standardDeviation.n': instructorGPA._standardDeviation.n,
+          'GPA._average.n': instructorData.GPA._average.n,
+          'GPA._average.sum': instructorData.GPA._average.sum,
+          'GPA.average': instructorData.GPA._average.value(),
+          'GPA._standardDeviation.n': instructorData.GPA._standardDeviation.n,
           'GPA._standardDeviation.delta':
-            instructorGPA._standardDeviation.delta,
-          'GPA._standardDeviation.mean': instructorGPA._standardDeviation.mean,
-          'GPA._standardDeviation.M2': instructorGPA._standardDeviation.M2,
-          'GPA._standardDeviation.ddof': instructorGPA._standardDeviation.ddof,
-          'GPA.standardDeviation': instructorGPA._standardDeviation.value(),
-          'GPA.maximum': instructorGPA._mmr.maximum,
-          'GPA.minimum': instructorGPA._mmr.minimum,
-          'GPA.range': instructorGPA._mmr.range,
+          instructorData.GPA._standardDeviation.delta,
+          'GPA._standardDeviation.mean': instructorData.GPA._standardDeviation.mean,
+          'GPA._standardDeviation.M2': instructorData.GPA._standardDeviation.M2,
+          'GPA._standardDeviation.ddof': instructorData.GPA._standardDeviation.ddof,
+          'GPA.standardDeviation': instructorData.GPA._standardDeviation.value(),
+          'GPA.maximum': instructorData.GPA._mmr.maximum,
+          'GPA.minimum': instructorData.GPA._mmr.minimum,
+          'GPA.range': instructorData.GPA._mmr.range,
           // TODO: median
         };
         // update department count, initialize count if does not exist
