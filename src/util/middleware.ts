@@ -27,14 +27,14 @@ export async function authorization(
   if (IS_HOSTED === false) return next();
 
   try {
-    let access_token = req.get('X-Access-Token'); // retrieves the X-Access-Token header field
-    let doc = firebase.firestore().collection('tokens').doc(access_token!);
-    let snapshot = await doc.get();
+    const access_token = req.get('X-Access-Token'); // retrieves the X-Access-Token header field
+    const doc = firebase.firestore().collection('tokens').doc(access_token!);
+    const snapshot = await doc.get();
     if (!snapshot.exists) {
       return res.sendStatus(403);
     } else {
-      let temp = snapshot.data() as Token;
-      let token = new Token(
+      const temp = snapshot.data() as Token;
+      const token = new Token(
         temp.application,
         temp.bearer,
         temp.permissions,
