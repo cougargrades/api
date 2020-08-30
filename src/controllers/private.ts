@@ -83,7 +83,7 @@ export async function uploadPatchFile(req: Request<any, any, Patchfile, any>, re
           }
         }
       }
-      console.log(pf.toString());
+      //console.log(pf.toString());
       await processPatchFile(pf);
       return res.sendStatus(200);
     }
