@@ -68,7 +68,7 @@ app.get(
 app.use('/private/*', authorization);
 app.get('/private/hello', helloController.world);
 app.put('/private/GradeDistributionCSVRow', privateController.uploadRecord);
-app.patch('/private/Patchfile', privateController.uploadPatchFile);
+app.post('/private/Patchfile', privateController.uploadPatchFile);
 app.get('/private/tokens/self', privateController.getSelfToken);
 
 app.get('/', (req: Request, res: Response) => res.json(getRoutes(app)));
