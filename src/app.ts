@@ -4,7 +4,11 @@ import compression from 'compression'; // compresses requests
 import bodyParser from 'body-parser';
 import { query } from 'express-validator';
 import { getRoutes } from 'get-routes';
-import { rewriteFirebaseHosting, authorization } from './util/middleware';
+import {
+  rewriteFirebaseHosting,
+  authorization,
+  addCORSHeaders,
+} from './util/middleware';
 import * as sanitizer from './util/sanitizer';
 
 // Controllers (route handlers)
@@ -19,6 +23,7 @@ const app = express();
 // Express configuration
 app.set('port', process.env.PORT || 3000);
 app.use(rewriteFirebaseHosting);
+app.use(addCORSHeaders);
 app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
