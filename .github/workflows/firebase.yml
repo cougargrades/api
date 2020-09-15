@@ -15,7 +15,7 @@ jobs:
           access_token: ${{ github.token }}
   buildAndDeploy:
     name: Deploy
-    needs: build
+    needs: prep
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
