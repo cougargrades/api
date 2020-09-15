@@ -11,7 +11,7 @@ export function rewriteFirebaseHosting(
   req: Request,
   res: Response,
   next: NextFunction,
-) {
+): void {
   if (req.url.indexOf(`/${API_PREFIX}/`) === 0) {
     req.url = req.url.substring(API_PREFIX.length + 1);
   }
@@ -22,7 +22,7 @@ export async function authorization(
   req: Request,
   res: Response,
   next: NextFunction,
-) {
+): Promise<any> {
   // always allowed in local environments
   if (IS_HOSTED === false) return next();
 
@@ -57,4 +57,13 @@ export async function authorization(
   } catch (err) {
     return res.sendStatus(403);
   }
+}
+
+export function addCORSHeaders(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
+  res.set('Access-Control-Allow-Origin', '*');
+  return next();
 }
