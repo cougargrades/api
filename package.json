@@ -4,9 +4,9 @@
   "description": "Cloud Functions for Firebase",
   "scripts": {
     "build": "npm run build-ts && npm run lint && npm run format",
-    "build-ts": "tsc",
+    "build-ts": "npx tsc",
     "debug": "npm run build && npm run watch-debug",
-    "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
+    "lint": "npx tsc --noEmit && npx eslint \"**/*.{js,ts}\" --quiet --fix",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "serve": "node dist/server.js",
     "serve-debug": "nodemon --inspect dist/server.js",
@@ -14,7 +14,7 @@
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node,Firebase\" -c \"cyan.bold,green.bold,magenta.bold\" \"npm run watch-ts\" \"npm run watch-node\" \"firebase emulators:start --import=./.firestore-data\"",
     "watch-debug": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node,Firebase\" -c \"cyan.bold,green.bold,magenta.bold\" \"npm run watch-ts\" \"npm run serve-debug\" \"firebase emulators:start\"",
     "watch-node": "nodemon dist/server.js",
-    "watch-ts": "tsc -w"
+    "watch-ts": "npx tsc -w"
   },
   "main": "dist/cloudfunction.js",
   "engines": {
