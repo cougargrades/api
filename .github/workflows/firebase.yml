@@ -13,9 +13,9 @@ jobs:
         uses: styfle/cancel-workflow-action@0.4.0
         with:
           access_token: ${{ github.token }}
-  build:
-    name: Build
-    needs: prep
+  buildAndDeploy:
+    name: Deploy
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -29,22 +29,10 @@ jobs:
         with:
           name: dist
           path: dist
-  deploy:
-    name: Deploy
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@master
-      - name: Download Artifact
-        uses: actions/download-artifact@master
-        with:
-          name: dist
-          path: dist
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only functions
+          args: deploy --only functions,firestore
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_ID: ${{ secrets.PROJECT_ID }}
