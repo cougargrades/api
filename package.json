@@ -29,7 +29,7 @@
     "errorhandler": "^1.5.1",
     "express": "^4.17.1",
     "express-validator": "^6.6.1",
-    "firebase-admin": "^9.0.0",
+    "firebase-admin": "^9.4.1",
     "firebase-functions": "^3.11.0",
     "get-routes": "^2.0.6"
   },
