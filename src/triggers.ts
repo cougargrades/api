@@ -1,6 +1,14 @@
 import * as functions from 'firebase-functions';
 import firebase from './util/firebase';
-import { GradeDistributionCSVRow as GDR, Course, Instructor, Util, GPA, Average, StandardDeviation } from '@cougargrades/types';
+import {
+  GradeDistributionCSVRow as GDR,
+  Course,
+  Instructor,
+  Util,
+  GPA,
+  Average,
+  StandardDeviation,
+} from '@cougargrades/types';
 import { GradeDistributionCSVRow } from '@cougargrades/types/dist/GradeDistributionCSVRow';
 import { firestore } from 'firebase-admin';
 const { FieldValue: FieldValue } = firestore;
@@ -15,7 +23,7 @@ export const whenUploadQueueAdded = functions
     const selfRef = db.collection('upload_queue').doc(context.params.qid);
 
     // if snapshot data is NOT the format we want, don't process this document
-    if(!is<GradeDistributionCSVRow>(snapshot.data())) {
+    if (!is<GradeDistributionCSVRow>(snapshot.data())) {
       console.error('Record failed interface test: ', snapshot.data());
       return;
     }
@@ -24,7 +32,9 @@ export const whenUploadQueueAdded = functions
 
     const transaction = db.runTransaction(async (txn) => {
       // create all references (to locations that may not exist)
-      const courseRef = db.collection('catalog').doc(GDR.getCourseMoniker(record));
+      const courseRef = db
+        .collection('catalog')
+        .doc(GDR.getCourseMoniker(record));
       const sectionRef = db
         .collection('sections')
         .doc(GDR.getSectionMoniker(record));
@@ -78,14 +88,11 @@ export const whenUploadQueueAdded = functions
       if (!sectionSnap.exists) {
         // add section to course with record data (save reference)
         // insert instructorRef and courseRef
-        
-        const t = Object.assign(
-          GDR.toSection(record),
-          {
-            instructors: [instructorRef],
-            course: courseRef,
-          },
-        );
+
+        const t = Object.assign(GDR.toSection(record), {
+          instructors: [instructorRef],
+          course: courseRef,
+        });
         await txn.set(sectionRef, t);
       } else {
         // update existing section to include additional instructor
@@ -101,10 +108,7 @@ export const whenUploadQueueAdded = functions
       // if instructor doesn't exist
       if (!instructorSnap.exists) {
         // create default instructor with record data
-        await txn.set(
-          instructorRef,
-          GDR.toInstructor(record),
-        );
+        await txn.set(instructorRef, GDR.toInstructor(record));
         instructorData = GDR.toInstructor(record);
       } else {
         // if instructor already exists
@@ -127,13 +131,27 @@ export const whenUploadQueueAdded = functions
           if (record.AVG_GPA !== undefined)
             GPA.include(courseData.GPA, record.AVG_GPA);
 
-          courseData.enrollment.totalA += GDR.toCourse(record).enrollment.totalA;
-          courseData.enrollment.totalB += GDR.toCourse(record).enrollment.totalB;
-          courseData.enrollment.totalC += GDR.toCourse(record).enrollment.totalC;
-          courseData.enrollment.totalD += GDR.toCourse(record).enrollment.totalD;
-          courseData.enrollment.totalF += GDR.toCourse(record).enrollment.totalF;
-          courseData.enrollment.totalQ += GDR.toCourse(record).enrollment.totalQ;
-          courseData.enrollment.totalEnrolled += GDR.toCourse(record).enrollment.totalEnrolled;
+          courseData.enrollment.totalA += GDR.toCourse(
+            record,
+          ).enrollment.totalA;
+          courseData.enrollment.totalB += GDR.toCourse(
+            record,
+          ).enrollment.totalB;
+          courseData.enrollment.totalC += GDR.toCourse(
+            record,
+          ).enrollment.totalC;
+          courseData.enrollment.totalD += GDR.toCourse(
+            record,
+          ).enrollment.totalD;
+          courseData.enrollment.totalF += GDR.toCourse(
+            record,
+          ).enrollment.totalF;
+          courseData.enrollment.totalQ += GDR.toCourse(
+            record,
+          ).enrollment.totalQ;
+          courseData.enrollment.totalEnrolled += GDR.toCourse(
+            record,
+          ).enrollment.totalEnrolled;
 
           courseData.firstTaught = Math.min(
             courseData.firstTaught,
@@ -153,11 +171,14 @@ export const whenUploadQueueAdded = functions
           'GPA._average.sum': courseData.GPA._average.sum,
           'GPA.average': Average.value(courseData.GPA._average),
           'GPA._standardDeviation.n': courseData.GPA._standardDeviation.n,
-          'GPA._standardDeviation.delta': courseData.GPA._standardDeviation.delta,
+          'GPA._standardDeviation.delta':
+            courseData.GPA._standardDeviation.delta,
           'GPA._standardDeviation.mean': courseData.GPA._standardDeviation.mean,
           'GPA._standardDeviation.M2': courseData.GPA._standardDeviation.M2,
           'GPA._standardDeviation.ddof': courseData.GPA._standardDeviation.ddof,
-          'GPA.standardDeviation': StandardDeviation.value(courseData.GPA._standardDeviation),
+          'GPA.standardDeviation': StandardDeviation.value(
+            courseData.GPA._standardDeviation,
+          ),
           'GPA.maximum': courseData.GPA._mmr.maximum,
           'GPA.minimum': courseData.GPA._mmr.minimum,
           'GPA.range': courseData.GPA._mmr.range,
@@ -223,13 +244,27 @@ export const whenUploadQueueAdded = functions
           if (record.AVG_GPA !== undefined)
             GPA.include(instructorData.GPA, record.AVG_GPA);
 
-          instructorData.enrollment.totalA += GDR.toInstructor(record).enrollment.totalA;
-          instructorData.enrollment.totalB += GDR.toInstructor(record).enrollment.totalB;
-          instructorData.enrollment.totalC += GDR.toInstructor(record).enrollment.totalC;
-          instructorData.enrollment.totalD += GDR.toInstructor(record).enrollment.totalD;
-          instructorData.enrollment.totalF += GDR.toInstructor(record).enrollment.totalF;
-          instructorData.enrollment.totalQ += GDR.toInstructor(record).enrollment.totalQ;
-          instructorData.enrollment.totalEnrolled += GDR.toInstructor(record).enrollment.totalEnrolled;
+          instructorData.enrollment.totalA += GDR.toInstructor(
+            record,
+          ).enrollment.totalA;
+          instructorData.enrollment.totalB += GDR.toInstructor(
+            record,
+          ).enrollment.totalB;
+          instructorData.enrollment.totalC += GDR.toInstructor(
+            record,
+          ).enrollment.totalC;
+          instructorData.enrollment.totalD += GDR.toInstructor(
+            record,
+          ).enrollment.totalD;
+          instructorData.enrollment.totalF += GDR.toInstructor(
+            record,
+          ).enrollment.totalF;
+          instructorData.enrollment.totalQ += GDR.toInstructor(
+            record,
+          ).enrollment.totalQ;
+          instructorData.enrollment.totalEnrolled += GDR.toInstructor(
+            record,
+          ).enrollment.totalEnrolled;
         }
         const toUpdate: any = {
           courses: FieldValue.arrayUnion(courseRef),
@@ -242,13 +277,16 @@ export const whenUploadQueueAdded = functions
           'GPA._average.sum': instructorData.GPA._average.sum,
           'GPA.average': Average.value(instructorData.GPA._average),
           'GPA._standardDeviation.n': instructorData.GPA._standardDeviation.n,
-          'GPA._standardDeviation.delta': instructorData.GPA._standardDeviation.delta,
+          'GPA._standardDeviation.delta':
+            instructorData.GPA._standardDeviation.delta,
           'GPA._standardDeviation.mean':
             instructorData.GPA._standardDeviation.mean,
           'GPA._standardDeviation.M2': instructorData.GPA._standardDeviation.M2,
           'GPA._standardDeviation.ddof':
             instructorData.GPA._standardDeviation.ddof,
-          'GPA.standardDeviation': StandardDeviation.value(instructorData.GPA._standardDeviation),
+          'GPA.standardDeviation': StandardDeviation.value(
+            instructorData.GPA._standardDeviation,
+          ),
           'GPA.maximum': instructorData.GPA._mmr.maximum,
           'GPA.minimum': instructorData.GPA._mmr.minimum,
           'GPA.range': instructorData.GPA._mmr.range,

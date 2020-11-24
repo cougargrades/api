@@ -35,15 +35,14 @@ export async function uploadRecord(
 ) {
   try {
     // even though we're using a validator in the Express.js definition, we should double check here
-    if(is<GradeDistributionCSVRow>(req.body)) {
+    if (is<GradeDistributionCSVRow>(req.body)) {
       const doc = await firebase
-      .firestore()
-      .collection('upload_queue')
-      .add(req.body);
+        .firestore()
+        .collection('upload_queue')
+        .add(req.body);
 
       return res.status(200).json(doc.path);
-    }
-    else {
+    } else {
       return res.sendStatus(400);
     }
   } catch (err) {
@@ -58,11 +57,10 @@ export async function uploadPatchFile(
 ) {
   try {
     // even though we're using a validator in the Express.js definition, we should double check here
-    if(is<Patchfile>(req.body)) {
+    if (is<Patchfile>(req.body)) {
       await processPatchFile(req.body);
       return res.sendStatus(200);
-    }
-    else {
+    } else {
       return res.sendStatus(400);
     }
   } catch (err) {
