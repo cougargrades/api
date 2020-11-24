@@ -13,6 +13,7 @@ import { GradeDistributionCSVRow } from '@cougargrades/types/dist/GradeDistribut
 import { firestore } from 'firebase-admin';
 const { FieldValue: FieldValue } = firestore;
 const db = firebase.firestore();
+db.settings({ ignoreUndefinedProperties: true });
 import { is } from 'typescript-is';
 
 export const whenUploadQueueAdded = functions
@@ -128,8 +129,9 @@ export const whenUploadQueueAdded = functions
       if (!sectionSnap.exists) {
         // if the section didn't exist already, update all the counters for this Course
         if (courseSnap.exists) {
-          if (record.AVG_GPA !== undefined)
+          if (record.AVG_GPA !== undefined) {
             GPA.include(courseData.GPA, record.AVG_GPA);
+          }
 
           courseData.enrollment.totalA += GDR.toCourse(
             record,
@@ -179,6 +181,9 @@ export const whenUploadQueueAdded = functions
           'GPA.standardDeviation': StandardDeviation.value(
             courseData.GPA._standardDeviation,
           ),
+          'GPA._mmr.maximum': courseData.GPA._mmr.maximum,
+          'GPA._mmr.minimum': courseData.GPA._mmr.minimum,
+          'GPA._mmr.range': courseData.GPA._mmr.range,
           'GPA.maximum': courseData.GPA._mmr.maximum,
           'GPA.minimum': courseData.GPA._mmr.minimum,
           'GPA.range': courseData.GPA._mmr.range,
