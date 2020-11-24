@@ -24,7 +24,20 @@ export async function getSelfToken(req: Request, res: Response) {
       return res.status(200).json(snapshot.data());
     }
   } catch (err) {
-    console.log(err);
+    console.error(err);
+    return res.sendStatus(500);
+  }
+}
+
+export async function getUploadQueueSize(req: Request, res: Response) {
+  try {
+    const documents = await firebase
+      .firestore()
+      .collection('upload_queue')
+      .listDocuments();
+    return res.status(200).json(documents.length);
+  } catch (err) {
+    console.error(err);
     return res.sendStatus(500);
   }
 }
