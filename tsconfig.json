@@ -9,11 +9,9 @@
     "target": "es2017",
     "outDir": "dist",
     "baseUrl": ".",
-    "paths": {
-      "@/*": [
-        "*"
-      ]
-    }
+    "plugins": [
+      { "transform": "typescript-is/lib/transform-inline/transformer" }
+    ]
   },
   "include": [
     "src/**/*"

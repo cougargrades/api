@@ -2,8 +2,9 @@ import express from 'express';
 import { Request, Response } from 'express';
 import compression from 'compression'; // compresses requests
 import bodyParser from 'body-parser';
-import { query } from 'express-validator';
+import { query, body } from 'express-validator';
 import { getRoutes } from 'get-routes';
+import { is } from 'typescript-is';
 import {
   rewriteFirebaseHosting,
   authorization,
@@ -16,6 +17,8 @@ import * as helloController from './controllers/hello';
 import * as catalogController from './controllers/catalog';
 import * as instructorController from './controllers/instructors';
 import * as privateController from './controllers/private';
+import { GradeDistributionCSVRow } from '@cougargrades/types/dist/GradeDistributionCSVRow';
+import { Patchfile } from '@cougargrades/types/dist/Patchfile';
 
 // Create Express server
 const app = express();
@@ -72,8 +75,20 @@ app.get(
 
 app.use('/private/*', authorization);
 app.get('/private/hello', helloController.world);
-app.put('/private/GradeDistributionCSVRow', privateController.uploadRecord);
-app.post('/private/Patchfile', privateController.uploadPatchFile);
+app.put(
+  '/private/GradeDistributionCSVRow', 
+  [
+    body().custom(value => is<GradeDistributionCSVRow>(value)) // checks if what was submitted conforms to TypeScript interface
+  ],
+  privateController.uploadRecord
+);
+app.post(
+  '/private/Patchfile', 
+  [
+    body().custom(value => is<Patchfile>(value)) // checks if what was submitted conforms to TypeScript interface
+  ], 
+  privateController.uploadPatchFile
+  );
 app.get('/private/tokens/self', privateController.getSelfToken);
 
 app.get('/', (req: Request, res: Response) => res.json(getRoutes(app)));
