@@ -1,19 +1,17 @@
 import { Request, Response } from 'express';
 import firebase from '../util/firebase';
-import {
-  GradeDistributionCSVRow,
-  Patchfile,
-  PatchfileUtil,
-} from '@cougargrades/types';
 import { firestore } from 'firebase-admin';
 const { FieldValue: FieldValue } = firestore;
+import { is } from 'typescript-is';
+import { GradeDistributionCSVRow } from '@cougargrades/types/dist/GradeDistributionCSVRow';
 import {
+  Patchfile,
   WriteAction,
   MergeAction,
   AppendAction,
   IncrementAction,
   CreateAction,
-} from '@cougargrades/types/typings/Patchfile';
+} from '@cougargrades/types/dist/Patchfile';
 
 export async function getSelfToken(req: Request, res: Response) {
   try {
@@ -36,29 +34,18 @@ export async function uploadRecord(
   res: Response,
 ) {
   try {
-    const record = new GradeDistributionCSVRow(
-      req.body.TERM,
-      req.body.SUBJECT,
-      req.body.CATALOG_NBR,
-      req.body.CLASS_SECTION,
-      req.body.COURSE_DESCR,
-      req.body.INSTR_LAST_NAME,
-      req.body.INSTR_FIRST_NAME,
-      req.body.A,
-      req.body.B,
-      req.body.C,
-      req.body.D,
-      req.body.F,
-      req.body.TOTAL_DROPPED,
-      req.body.AVG_GPA,
-    );
-
-    const doc = await firebase
+    // even though we're using a validator in the Express.js definition, we should double check here
+    if(is<GradeDistributionCSVRow>(req.body)) {
+      const doc = await firebase
       .firestore()
       .collection('upload_queue')
-      .add(Object.assign({}, record));
+      .add(req.body);
 
-    return res.status(200).json(doc.path);
+      return res.status(200).json(doc.path);
+    }
+    else {
+      return res.sendStatus(400);
+    }
   } catch (err) {
     console.error(err);
     return res.sendStatus(500);
@@ -70,41 +57,12 @@ export async function uploadPatchFile(
   res: Response,
 ) {
   try {
-    if (
-      req.body?.target?.path !== undefined &&
-      req.body?.target?.archetype !== undefined
-    ) {
-      const pf = new Patchfile(
-        req.body?.target?.path,
-        req.body?.target?.archetype,
-      );
-
-      for (const item of req.body.actions) {
-        if (req.body.target.archetype === 'document') {
-          if (item.operation === 'write') {
-            pf.write(item.payload);
-          } else if (item.operation === 'merge') {
-            pf.merge(item.payload);
-          } else if (item.operation === 'append') {
-            if (PatchfileUtil.isAppendAction(item)) {
-              pf.append(item.arrayfield, item.datatype, item.payload);
-            }
-          } else if (
-            item.operation === 'increment' &&
-            PatchfileUtil.isIncrementAction(item)
-          ) {
-            pf.increment(item.field, item.payload);
-          }
-        } else if (req.body.target.archetype === 'collection') {
-          if (item.operation === 'create') {
-            pf.create(item.payload);
-          }
-        }
-      }
-      //console.log(pf.toString());
-      await processPatchFile(pf);
+    // even though we're using a validator in the Express.js definition, we should double check here
+    if(is<Patchfile>(req.body)) {
+      await processPatchFile(req.body);
       return res.sendStatus(200);
-    } else {
+    }
+    else {
       return res.sendStatus(400);
     }
   } catch (err) {

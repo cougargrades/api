@@ -31,19 +31,16 @@ export async function authorization(
     const doc = firebase.firestore().collection('tokens').doc(access_token!);
     const snapshot = await doc.get();
     if (!snapshot.exists) {
-      return res.sendStatus(403);
+      return res.sendStatus(401);
     } else {
-      const temp = snapshot.data() as Token;
-      const token = new Token(
-        temp.application,
-        temp.bearer,
-        temp.permissions,
-        temp.createdDate,
-      );
+      const token = snapshot.data() as Token.Token;
       // check if this token has (example) "update" permissions on /token
       if (
-        token.hasPermission(
-          token.operation(req.method as 'GET' | 'POST' | 'PUT' | 'DELETE'),
+        Token.hasPermission(
+          token,
+          Token.HTTPMethodToOperation(
+            req.method as 'GET' | 'POST' | 'PUT' | 'DELETE',
+          ),
           req.path,
         )
       ) {
