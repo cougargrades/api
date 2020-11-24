@@ -89,6 +89,7 @@ app.post(
   ],
   privateController.uploadPatchFile,
 );
+app.post('/private/upload_queue_backlog', privateController.processBacklog);
 app.get('/private/tokens/self', privateController.getSelfToken);
 
 app.get('/', (req: Request, res: Response) => res.json(getRoutes(app)));
