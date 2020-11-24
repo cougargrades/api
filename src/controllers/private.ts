@@ -94,7 +94,6 @@ async function processPatchFile(patch: Patchfile) {
 /**
  * Document exclusive operations
  */
-
 async function commitPatchWriteOperation(
   txn: firestore.Transaction,
   patch: Patchfile,
@@ -110,7 +109,10 @@ async function commitPatchMergeOperation(
   action: MergeAction,
 ) {
   const ref = firebase.firestore().doc(patch.target.path);
-  await txn.set(ref, action.payload, { merge: true });
+  const snap = await txn.get(ref);
+  if (snap.exists) {
+    await txn.set(ref, action.payload, { merge: true });
+  }
 }
 
 async function commitPatchAppendOperation(
@@ -142,7 +144,6 @@ async function commitPatchIncrementOperation(
 /**
  * Collection exclusive operations
  */
-
 async function commitPatchCreateOperation(
   txn: firestore.Transaction,
   patch: Patchfile,
