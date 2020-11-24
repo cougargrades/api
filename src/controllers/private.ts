@@ -29,6 +29,34 @@ export async function getSelfToken(req: Request, res: Response) {
   }
 }
 
+export async function processBacklog(req: Request, res: Response) {
+  try {
+    const backlog = await firebase
+      .firestore()
+      .collection('upload_queue_backlog')
+      .listDocuments();
+
+    for (const fromRef of backlog) {
+      // Create a reference for the destination
+      const toRef = firebase.firestore().collection('upload_queue').doc();
+      // Run a transaction on each reference
+      await firebase.firestore().runTransaction(async (txn) => {
+        // Get the data from the source
+        const fromSnap = await txn.get(fromRef);
+        // Write the data to the destination
+        await txn.create(toRef, fromSnap.data());
+        // Delete the source data
+        await txn.delete(fromRef);
+      });
+    }
+
+    return res.status(202).send(`Queued ${backlog.length} items again`);
+  } catch (err) {
+    console.error(err);
+    return res.sendStatus(500);
+  }
+}
+
 export async function uploadRecord(
   req: Request<any, any, GradeDistributionCSVRow, any>,
   res: Response,

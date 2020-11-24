@@ -325,6 +325,7 @@ export const whenUploadQueueAdded = functions
       if (err.code === 10) {
         // If the transaction timed out due to contention, add it back to the queue up to 3 times.
         const retryCount = snapshot.data().__retryCount || 0;
+        const backlogCount = snapshot.data().__backlogCount || 0;
         // please work, i dont want a recursive mess
         if (retryCount < 3) {
           // idk how we would fail to delete a unique doc then create a unique doc, so imma leave it
@@ -338,6 +339,16 @@ export const whenUploadQueueAdded = functions
             );
           });
         } else {
+          await db.runTransaction(async (txn) => {
+            const backlogRef = db.collection('upload_queue_backlog').doc();
+            await txn.delete(selfRef);
+            await txn.set(
+              backlogRef,
+              Object.assign(snapshot.data(), {
+                __backlogCount: backlogCount + 1,
+              }),
+            );
+          });
           throw new Error(`Re-Queued too many times: ${snapshot.ref.path}`);
         }
       }
