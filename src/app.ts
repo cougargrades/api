@@ -89,6 +89,7 @@ app.post(
   ],
   privateController.uploadPatchFile,
 );
+app.get('/private/upload_queue', privateController.getUploadQueueSize);
 app.post('/private/upload_queue_backlog', privateController.processBacklog);
 app.get('/private/tokens/self', privateController.getSelfToken);
 
