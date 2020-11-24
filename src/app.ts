@@ -76,19 +76,19 @@ app.get(
 app.use('/private/*', authorization);
 app.get('/private/hello', helloController.world);
 app.put(
-  '/private/GradeDistributionCSVRow', 
+  '/private/GradeDistributionCSVRow',
   [
-    body().custom(value => is<GradeDistributionCSVRow>(value)) // checks if what was submitted conforms to TypeScript interface
+    body().custom((value) => is<GradeDistributionCSVRow>(value)), // checks if what was submitted conforms to TypeScript interface
   ],
-  privateController.uploadRecord
+  privateController.uploadRecord,
 );
 app.post(
-  '/private/Patchfile', 
+  '/private/Patchfile',
   [
-    body().custom(value => is<Patchfile>(value)) // checks if what was submitted conforms to TypeScript interface
-  ], 
-  privateController.uploadPatchFile
-  );
+    body().custom((value) => is<Patchfile>(value)), // checks if what was submitted conforms to TypeScript interface
+  ],
+  privateController.uploadPatchFile,
+);
 app.get('/private/tokens/self', privateController.getSelfToken);
 
 app.get('/', (req: Request, res: Response) => res.json(getRoutes(app)));
