@@ -1,7 +1,6 @@
 # @cougargrades/api
 
-![Build and Deploy](https://github.com/cougargrades/api/workflows/Build%20and%20Deploy/badge.svg)
-![CodeQL](https://github.com/cougargrades/api/workflows/CodeQL/badge.svg)
+![Build and Deploy](https://github.com/cougargrades/api/workflows/Build%20and%20Deploy/badge.svg) ![Build and Deploy - Production](https://github.com/cougargrades/api/workflows/Build%20and%20Deploy%20-%20Production/badge.svg) ![CodeQL](https://github.com/cougargrades/api/workflows/CodeQL/badge.svg)
 
 Serverless HTTP API for cougargrades.io
 
