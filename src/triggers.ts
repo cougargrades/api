@@ -320,20 +320,33 @@ export const whenUploadQueueAdded = functions
       // If the section doesn't exist (first instructor) OR if the proposed instructor isn't included in Section.instructorNames (2nd and onward instructor)
       if(!sectionSnap.exists || (Array.isArray(sectionData.instructorNames) && sectionData.instructorNames.findIndex(e => e.firstName === record.INSTR_FIRST_NAME && e.lastName === record.INSTR_LAST_NAME) === -1)) {
 
-        // get enrollment values for JUST THIS record and NOT the running total
-        const { totalA, totalB, totalC, totalD, totalF, totalQ, totalEnrolled } = GDR.toInstructor(record).enrollment;
+        /**
+         * Now that we've determined that this section hasn't been submitted before with this instructor,
+         * we need to verify that this instructor isn't brand new.
+         * 
+         * If the instructor is brand new, then the enrollment field is already supplied when the instructor
+         * was initialized above.
+         * 
+         * TL;DR Brand new instructors shouldn't be incremented
+         * TL;DR Only old instructors should be incremented
+         */
 
-        // stage our updates
-        instructorToUpdate = {
-          'enrollment.totalA': FieldValue.increment(totalA),
-          'enrollment.totalB': FieldValue.increment(totalB),
-          'enrollment.totalC': FieldValue.increment(totalC),
-          'enrollment.totalD': FieldValue.increment(totalD),
-          'enrollment.totalF': FieldValue.increment(totalF),
-          'enrollment.totalQ': FieldValue.increment(totalQ),
-          'enrollment.totalEnrolled': FieldValue.increment(totalEnrolled),
-          ...instructorToUpdate
-        };
+        if(instructorSnap.exists) {
+          // get enrollment values for JUST THIS record and NOT the running total
+          const { totalA, totalB, totalC, totalD, totalF, totalQ, totalEnrolled } = GDR.toInstructor(record).enrollment;
+
+          // stage our updates
+          instructorToUpdate = {
+            'enrollment.totalA': FieldValue.increment(totalA),
+            'enrollment.totalB': FieldValue.increment(totalB),
+            'enrollment.totalC': FieldValue.increment(totalC),
+            'enrollment.totalD': FieldValue.increment(totalD),
+            'enrollment.totalF': FieldValue.increment(totalF),
+            'enrollment.totalQ': FieldValue.increment(totalQ),
+            'enrollment.totalEnrolled': FieldValue.increment(totalEnrolled),
+            ...instructorToUpdate
+          };
+        }
       }
 
       /**
