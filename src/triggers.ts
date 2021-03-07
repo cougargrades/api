@@ -443,6 +443,7 @@ export const saveUserToDatabase = functions
       displayName: user.displayName!, 
       email: user.email!,
       photoURL: user.photoURL!,
+      uid: user.uid,
       unlimited_access: false
     };
 
