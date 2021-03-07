@@ -9,6 +9,7 @@ import {
   Average,
   StandardDeviation,
   Section,
+  User,
 } from '@cougargrades/types';
 import { GradeDistributionCSVRow } from '@cougargrades/types/dist/GradeDistributionCSVRow';
 import { firestore } from 'firebase-admin';
@@ -430,3 +431,34 @@ export const whenUploadQueueAdded = functions
       }
     }
   });
+
+export const saveUserToDatabase = functions
+  .auth.user().onCreate(async (user) => {
+    // establish a reference
+    const userRef = db.collection('users').doc(user.uid);
+
+    // draft the new user's data
+    // we confirmed that this information was accessible when specifying Google OAuth2 scopes
+    let userData: User = {
+      displayName: user.displayName!, 
+      email: user.email!,
+      photoURL: user.photoURL!,
+      unlimited_access: false
+    };
+
+    // commit change to database
+    await db.runTransaction(async (txn) => {
+      await txn.set(userRef, userData);
+    })
+  });
+
+export const deleteUserFromDatabase = functions
+  .auth.user().onDelete(async (user) => {
+    // establish a reference
+    const userRef = db.collection('users').doc(user.uid);
+
+    // commit change to database
+    await db.runTransaction(async (txn) => {
+      await txn.delete(userRef);
+    })
+  })
