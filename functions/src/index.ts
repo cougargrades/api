@@ -9,6 +9,7 @@ export const helloWorld = functions.https.onRequest((request, response) => {
 });
 
 export * as groupA from './groupA';
+export * as firestore from './firestore';
 
 // Export examples
 // export { Course, PublicationInfo } from './Course';
