@@ -1,9 +1,10 @@
 import * as functions from 'firebase-functions';
-import { firebase } from '../_common';
+import { db } from '../_firebaseHelper';
 import { User } from '@cougargrades/types';
 
-const db = firebase.firestore();
-
+/**
+ * This creates a database reference for a user when they login for the first time.
+ */
 export const saveUserToDatabase = functions
   .auth.user().onCreate(async (user) => {
     // establish a reference
@@ -12,9 +13,9 @@ export const saveUserToDatabase = functions
     // draft the new user's data
     // we confirmed that this information was accessible when specifying Google OAuth2 scopes
     let userData: User = {
-      displayName: user.displayName!, 
-      email: user.email!,
-      photoURL: user.photoURL!,
+      displayName: user.displayName ?? user.uid, 
+      email: user.email ?? `${user.uid}@users.cougargrades.io`,
+      photoURL: user.photoURL ?? `https://avatars.dicebear.com/api/identicon/${user.uid}.svg`,
       uid: user.uid,
       unlimited_access: false
     };

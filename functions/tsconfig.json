@@ -11,5 +11,10 @@
   "compileOnSave": true,
   "include": [
     "src"
+  ],
+  "plugins": [
+    {
+      "transform": "typescript-is/lib/transform-inline/transformer"
+    }
   ]
 }
