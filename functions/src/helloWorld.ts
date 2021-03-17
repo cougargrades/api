@@ -1,7 +1,15 @@
 import * as functions from 'firebase-functions';
-import { db } from '../_common';
+import { db } from './_common';
 
-export const whenUploadQueueAdded = functions.https.onRequest(async (request, response) => {
+// Start writing Firebase Functions
+// https://firebase.google.com/docs/functions/typescript
+
+// export const helloWorld = functions.https.onRequest((request, response) => {
+//   functions.logger.info('Hello logs!', {structuredData: true});
+//   response.send('Hello from Firebase!');
+// });
+
+export const helloWorld = functions.https.onRequest(async (request, response) => {
   // This works in the emulator!
   const docSnap = await db
     .collection('catalog')
