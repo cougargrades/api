@@ -28,6 +28,7 @@ export const whenUploadQueueAdded = functions
         await txn.update(selfRef, Object.assign(snapshot.data(), {
           __failureReason: 'Record failed interface test'
         }));
+        return txn;
       })
       console.error('Record failed interface test: ', snapshot.data());
       return;
