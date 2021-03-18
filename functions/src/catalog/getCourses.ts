@@ -1,8 +1,11 @@
 import * as functions from 'firebase-functions';
 import { db } from '../_firebaseHelper';
-import { zeroIfNaN } from '../_httpHelper';
+import { useCache, useCors, zeroIfNaN } from '../_httpHelper';
 
 export const getCourses = functions.https.onRequest(async (request, response) => {
+  useCors(response);
+  useCache(response);
+
   const LIMIT_PER_PAGE = 25;
 
   const offset: number = zeroIfNaN(request.query.offset);
