@@ -1,25 +1,22 @@
 import * as functions from 'firebase-functions';
-import firebase from './util/firebase';
-import {
-  GradeDistributionCSVRow as GDR,
-  Course,
-  Instructor,
-  Util,
-  GPA,
-  Average,
-  StandardDeviation,
-  Section,
-  User,
-} from '@cougargrades/types';
-import { GradeDistributionCSVRow } from '@cougargrades/types/dist/GradeDistributionCSVRow';
-import { firestore } from 'firebase-admin';
-const { FieldValue: FieldValue } = firestore;
-const db = firebase.firestore();
-db.settings({ ignoreUndefinedProperties: true });
+
+// the only thing we care about from this package is FieldValue
+import * as admin from 'firebase-admin';
+const { FieldValue } = admin.firestore;
+
+// used for automatically generated Type Guards
 import { is } from 'typescript-is';
 
+// our common interfaces
+import { Average, Course, GPA, GradeDistributionCSVRow as GDR, Instructor, Section, StandardDeviation, Util } from '@cougargrades/types';
+import { GradeDistributionCSVRow } from '@cougargrades/types/dist/GradeDistributionCSVRow';
+
+// preconfigured Firestore intance
+import { db } from '../_firebaseHelper';
+
+// the actual function which is the focus of this file
 export const whenUploadQueueAdded = functions
-  .runWith({ memory: '256MB', timeoutSeconds: 540 })
+  .runWith({ timeoutSeconds: 540 })
   .firestore.document('upload_queue/{qid}')
   .onCreate(async (snapshot, context) => {
     // process upload
@@ -31,6 +28,7 @@ export const whenUploadQueueAdded = functions
         await txn.update(selfRef, Object.assign(snapshot.data(), {
           __failureReason: 'Record failed interface test'
         }));
+        return txn;
       })
       console.error('Record failed interface test: ', snapshot.data());
       return;
@@ -173,7 +171,7 @@ export const whenUploadQueueAdded = functions
 
       // Course
       // if the section doesn't exist, then we want to include this data in our Course calculation
-      if(!sectionSnap.exists) {
+      if (!sectionSnap.exists) {
 
         /**
          * @cougargrades/types will initialize the Course.GPA field, 
@@ -184,9 +182,9 @@ export const whenUploadQueueAdded = functions
          * the GPA information inside of courseData is the 
          * running total and NOT the values of just this record.
          */
-        if(courseSnap.exists) {
+        if (courseSnap.exists) {
           // check if record has missing AVG
-          if(record.AVG_GPA !== undefined) {
+          if (record.AVG_GPA !== undefined) {
             // include in GPA
             GPA.include(courseData.GPA, record.AVG_GPA);
 
@@ -229,7 +227,7 @@ export const whenUploadQueueAdded = functions
        */
 
       // If the section doesn't exist (first instructor) OR if the proposed instructor isn't included in Section.instructorNames (2nd and onward instructor)
-      if(!sectionSnap.exists || (Array.isArray(sectionData.instructorNames) && sectionData.instructorNames.findIndex(e => e.firstName === record.INSTR_FIRST_NAME && e.lastName === record.INSTR_LAST_NAME) === -1)) {
+      if (!sectionSnap.exists || (Array.isArray(sectionData.instructorNames) && sectionData.instructorNames.findIndex(e => e.firstName === record.INSTR_FIRST_NAME && e.lastName === record.INSTR_LAST_NAME) === -1)) {
 
         /**
          * @cougargrades/types will initialize the Instructor.GPA field, 
@@ -240,9 +238,9 @@ export const whenUploadQueueAdded = functions
          * the GPA information inside of instructorData is the 
          * running total and NOT the values of just this record.
          */
-        if(instructorSnap.exists) {
+        if (instructorSnap.exists) {
           // check if record has missing AVG
-          if(record.AVG_GPA !== undefined) {
+          if (record.AVG_GPA !== undefined) {
             // include in GPA
             GPA.include(instructorData.GPA, record.AVG_GPA);
 
@@ -273,7 +271,7 @@ export const whenUploadQueueAdded = functions
        */
 
       // if the section doesn't exist, then we want to include this data in our Course calculation
-      if(!sectionSnap.exists) {
+      if (!sectionSnap.exists) {
 
         /**
          * @cougargrades/types will initialize the Course.Enrollment field, 
@@ -284,7 +282,7 @@ export const whenUploadQueueAdded = functions
          * the enrollment information inside of courseData is the 
          * running total and NOT the values of just this record.
          */
-        if(courseSnap.exists) {
+        if (courseSnap.exists) {
 
           // get enrollment values for JUST THIS record and NOT the running total
           const { totalA, totalB, totalC, totalD, totalF, totalQ, totalEnrolled } = GDR.toCourse(record).enrollment;
@@ -319,7 +317,7 @@ export const whenUploadQueueAdded = functions
        */
 
       // If the section doesn't exist (first instructor) OR if the proposed instructor isn't included in Section.instructorNames (2nd and onward instructor)
-      if(!sectionSnap.exists || (Array.isArray(sectionData.instructorNames) && sectionData.instructorNames.findIndex(e => e.firstName === record.INSTR_FIRST_NAME && e.lastName === record.INSTR_LAST_NAME) === -1)) {
+      if (!sectionSnap.exists || (Array.isArray(sectionData.instructorNames) && sectionData.instructorNames.findIndex(e => e.firstName === record.INSTR_FIRST_NAME && e.lastName === record.INSTR_LAST_NAME) === -1)) {
 
         /**
          * Now that we've determined that this section hasn't been submitted before with this instructor,
@@ -332,7 +330,7 @@ export const whenUploadQueueAdded = functions
          * TL;DR Only old instructors should be incremented
          */
 
-        if(instructorSnap.exists) {
+        if (instructorSnap.exists) {
           // get enrollment values for JUST THIS record and NOT the running total
           const { totalA, totalB, totalC, totalD, totalF, totalQ, totalEnrolled } = GDR.toInstructor(record).enrollment;
 
@@ -376,10 +374,10 @@ export const whenUploadQueueAdded = functions
 
       // update department count, initialize count if does not exist
       instructorToUpdate[`departments.${record.SUBJECT}`] =
-      (instructorData.departments as any)[record.SUBJECT] === undefined
-        ? 1
-        : FieldValue.increment(1);
-      
+        (instructorData.departments as any)[record.SUBJECT] === undefined
+          ? 1
+          : FieldValue.increment(1);
+
       /**
        * ----------------
        * Execute transaction
@@ -431,35 +429,3 @@ export const whenUploadQueueAdded = functions
       }
     }
   });
-
-export const saveUserToDatabase = functions
-  .auth.user().onCreate(async (user) => {
-    // establish a reference
-    const userRef = db.collection('users').doc(user.uid);
-
-    // draft the new user's data
-    // we confirmed that this information was accessible when specifying Google OAuth2 scopes
-    let userData: User = {
-      displayName: user.displayName!, 
-      email: user.email!,
-      photoURL: user.photoURL!,
-      uid: user.uid,
-      unlimited_access: false
-    };
-
-    // commit change to database
-    await db.runTransaction(async (txn) => {
-      await txn.set(userRef, userData);
-    })
-  });
-
-export const deleteUserFromDatabase = functions
-  .auth.user().onDelete(async (user) => {
-    // establish a reference
-    const userRef = db.collection('users').doc(user.uid);
-
-    // commit change to database
-    await db.runTransaction(async (txn) => {
-      await txn.delete(userRef);
-    })
-  })

@@ -20,14 +20,14 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@master
       - name: Install Dependencies
-        run: npm install
+        run: npm --prefix "functions" install
       - name: Build
-        run: npm run build
+        run: npm --prefix "functions" run build
       - name: Archive Production Artifact
         uses: actions/upload-artifact@master
         with:
-          name: dist
-          path: dist
+          name: lib
+          path: functions/lib
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
