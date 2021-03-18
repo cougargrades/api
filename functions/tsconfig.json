@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "plugins": [
+      { "transform": "typescript-is/lib/transform-inline/transformer" }
+    ],
     "module": "commonjs",
     "noImplicitReturns": true,
     "noUnusedLocals": true,
@@ -11,10 +14,5 @@
   "compileOnSave": true,
   "include": [
     "src"
-  ],
-  "plugins": [
-    {
-      "transform": "typescript-is/lib/transform-inline/transformer"
-    }
   ]
 }
