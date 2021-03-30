@@ -3,8 +3,6 @@ import { firebase } from '../_firebaseHelper';
 import { User } from '@cougargrades/types';
 import { is } from 'typescript-is';
 
-
-
 export const propagateCustomClaims = functions
   .firestore.document('users/{qid}')
   .onUpdate(async (change, context) => {
