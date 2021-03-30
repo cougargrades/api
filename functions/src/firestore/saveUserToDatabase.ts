@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import { db } from '../_firebaseHelper';
+import { firebase, db } from '../_firebaseHelper';
 import { User } from '@cougargrades/types';
 
 /**
@@ -17,11 +17,16 @@ export const saveUserToDatabase = functions
       email: user.email ?? `${user.uid}@users.cougargrades.io`,
       photoURL: user.photoURL ?? `https://avatars.dicebear.com/api/identicon/${user.uid}.svg`,
       uid: user.uid,
-      unlimited_access: false
+      custom_claims: {
+        admin: false
+      }
     };
 
     // commit change to database
     await db.runTransaction(async (txn) => {
       await txn.set(userRef, userData);
     })
+
+    // send back custom claims
+    await firebase.auth().setCustomUserClaims(user.uid, userData.custom_claims);
   });
