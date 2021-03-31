@@ -99,9 +99,15 @@ async function commitPatchAppendOperation(
   action: AppendAction,
 ) {
   const ref = db.doc(patch.target.path);
-
   const temp: any = {};
-  temp[action.arrayfield] = FieldValue.arrayUnion(action.payload);
+
+  if(action.datatype === 'firebase.firestore.DocumentReference') {
+    const refToAppend = db.doc(action.payload);
+    temp[action.arrayfield] = FieldValue.arrayUnion(refToAppend);
+  }
+  else {
+    temp[action.arrayfield] = FieldValue.arrayUnion(action.payload);
+  }
 
   await txn.update(ref, temp);
 }
