@@ -3,19 +3,19 @@ service cloud.firestore {
   match /databases/{database}/documents {
     match /catalog/{document=**} {
       allow read: if true;
-      allow write: if false;
+      allow write: if request.auth != null && request.auth.token.admin == true;
     }
     match /meta/{document=**} {
       allow read: if true;
-      allow write: if false;
+      allow write: if request.auth != null && request.auth.token.admin == true;
     }
     match /instructors/{document=**} {
       allow read: if true;
-      allow write: if false;
+      allow write: if request.auth != null && request.auth.token.admin == true;
     }
     match /sections/{document=**} {
       allow read: if true;
-      allow write: if false;
+      allow write: if request.auth != null && request.auth.token.admin == true;
     }
     match /users/{userId} {
       allow read: if request.auth != null && request.auth.uid == userId;
