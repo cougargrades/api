@@ -15,7 +15,7 @@ export const whenPatchFileAdded = functions
       const selfData = snapshot.data();
       if (is<Patchfile>(selfData)) {
         // awaits transaction of Patchfile operation sequence
-        await PatchfileUtil.processPatchFile(db, selfData);
+        await PatchfileUtil.executePatchFile(db, selfData);
 
         // does another transaction that only does 1 thing: deletes this self reference
         // because we're using async/await, if a rejected promise is thrown, it appears as an exception thrown
