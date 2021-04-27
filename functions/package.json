@@ -16,7 +16,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "@cougargrades/types": "0.0.60",
+    "@cougargrades/types": "0.0.62",
     "firebase-admin": "^9.2.0",
     "firebase-functions": "^3.11.0",
     "typescript-is": "^0.17.1"
