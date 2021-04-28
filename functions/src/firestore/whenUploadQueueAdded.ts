@@ -138,8 +138,8 @@ export const whenUploadQueueAdded = functions
 
       // update course to include include instructors
       courseToUpdate = {
-        instructors: FieldValue.arrayUnion(instructorRef),
-        sections: FieldValue.arrayUnion(sectionRef),
+        instructors: FieldValue.arrayUnion(instructorRef) as any,
+        sections: FieldValue.arrayUnion(sectionRef) as any,
         // include already added fields
         ...courseToUpdate
       };
@@ -150,15 +150,15 @@ export const whenUploadQueueAdded = functions
         instructorNames: FieldValue.arrayUnion({
           firstName: record.INSTR_FIRST_NAME,
           lastName: record.INSTR_LAST_NAME,
-        }),
-        instructors: FieldValue.arrayUnion(instructorRef),
+        }) as any,
+        instructors: FieldValue.arrayUnion(instructorRef) as any,
         // include already added fields
         ...sectionToUpdate
       };
 
       instructorToUpdate = {
-        courses: FieldValue.arrayUnion(courseRef),
-        sections: FieldValue.arrayUnion(sectionRef),
+        courses: FieldValue.arrayUnion(courseRef) as any,
+        sections: FieldValue.arrayUnion(sectionRef) as any,
         // include already added fields
         ...instructorToUpdate
       };
