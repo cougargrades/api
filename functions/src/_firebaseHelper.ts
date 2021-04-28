@@ -7,3 +7,4 @@ export const firebase = !admin.apps.length ? admin.initializeApp() : admin.app()
 const _db = firebase.firestore();
 _db.settings({ ignoreUndefinedProperties: true });
 export const db = _db;
+export const FieldValue = admin.firestore.FieldValue;

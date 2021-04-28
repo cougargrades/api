@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 
 // the only thing we care about from this package is FieldValue
 import * as admin from 'firebase-admin';
-const { FieldValue } = admin.firestore;
+import FieldValue = admin.firestore.FieldValue;
 
 // used for automatically generated Type Guards
 import { is } from 'typescript-is';
