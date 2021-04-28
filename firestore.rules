@@ -5,15 +5,19 @@ service cloud.firestore {
       allow read: if true;
       allow write: if request.auth != null && request.auth.token.admin == true;
     }
-    match /meta/{document=**} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.token.admin == true;
-    }
     match /instructors/{document=**} {
       allow read: if true;
       allow write: if request.auth != null && request.auth.token.admin == true;
     }
     match /sections/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    match /groups/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    match /meta/{document=**} {
       allow read: if true;
       allow write: if request.auth != null && request.auth.token.admin == true;
     }
