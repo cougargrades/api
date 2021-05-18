@@ -8,7 +8,7 @@ import FieldValue = admin.firestore.FieldValue;
 import { is } from 'typescript-is';
 
 // our common interfaces
-import { Average, Course, GPA, GradeDistributionCSVRow as GDR, Instructor, Section, StandardDeviation, Util } from '@cougargrades/types';
+import { Average, Course, GPA, GradeDistributionCSVRow as GDR, Instructor, Section, Group, StandardDeviation, Util } from '@cougargrades/types';
 import { GradeDistributionCSVRow } from '@cougargrades/types/dist/GradeDistributionCSVRow';
 
 // preconfigured Firestore intance
@@ -47,17 +47,22 @@ export const whenUploadQueueAdded = functions
       const instructorRef = db
         .collection('instructors')
         .doc(GDR.getInstructorMoniker(record));
+      const groupRef = db
+        .collection('groups')
+        .doc(GDR.getGroupMoniker(record));
       const catalogMetaRef = db.collection('meta').doc('catalog');
 
       // perform all reads
       const courseSnap = await txn.get(courseRef);
       const sectionSnap = await txn.get(sectionRef);
       const instructorSnap = await txn.get(instructorRef);
+      const groupSnap = await txn.get(groupRef);
       const catalogMetaSnap = await txn.get(catalogMetaRef);
       // denoted variables to cache the result from the snapshot
       let courseData: Course;
       let sectionData: Section;
       let instructorData: Instructor;
+      //let groupData: Group;
       /**
        * Variables to hold the updates we're going to compose, then send off
        * 
@@ -70,6 +75,7 @@ export const whenUploadQueueAdded = functions
       let courseToUpdate: Partial<Course> & { [key: string]: any } = {};
       let sectionToUpdate: Partial<Section> & { [key: string]: any } = {};
       let instructorToUpdate: Partial<Instructor> & { [key: string]: any } = {};
+      let groupToUpdate: Partial<Group> & { [key: string]: any } = {};
 
       /**
        * ----------------
@@ -129,6 +135,18 @@ export const whenUploadQueueAdded = functions
         instructorData = instructorSnap.data() as Instructor;
       }
 
+      // if group doesn't exist
+      if (!groupSnap.exists) {
+        // create default group with record data
+        await txn.set(groupRef, GDR.toGroup(record));
+        //groupData = GDR.toGroup(record);
+      }
+      else {
+        // if group already exists
+        // save group data
+        //groupData = groupSnap.data() as Group;
+      }
+
       /**
        * ----------------
        * Now that defaults are set, we're going to update all the references set between each document.
@@ -140,6 +158,7 @@ export const whenUploadQueueAdded = functions
       courseToUpdate = {
         instructors: FieldValue.arrayUnion(instructorRef) as any,
         sections: FieldValue.arrayUnion(sectionRef) as any,
+        groups: FieldValue.arrayUnion(groupRef) as any,
         // include already added fields
         ...courseToUpdate
       };
@@ -161,6 +180,13 @@ export const whenUploadQueueAdded = functions
         sections: FieldValue.arrayUnion(sectionRef) as any,
         // include already added fields
         ...instructorToUpdate
+      };
+
+      groupToUpdate = {
+        courses: FieldValue.arrayUnion(courseRef) as any,
+        courses_count: FieldValue.increment(1) as any,
+        // include already added fields
+        ...groupToUpdate
       };
 
       /**
@@ -387,6 +413,7 @@ export const whenUploadQueueAdded = functions
       await txn.update(courseRef, courseToUpdate);
       await txn.update(sectionRef, sectionToUpdate);
       await txn.update(instructorRef, instructorToUpdate);
+      await txn.update(groupRef, groupToUpdate);
       await txn.delete(selfRef);
       return txn;
     });
