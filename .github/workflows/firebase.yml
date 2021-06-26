@@ -1,4 +1,4 @@
-name: "Build and Deploy - Testing"
+name: "Deploy to Testing Environment"
 on:
   push:
     branches:
@@ -22,11 +22,15 @@ jobs:
         uses: actions/checkout@master
       - uses: actions/setup-node@v2
         with:
-          node-version: '15.x'
-      - name: Install Dependencies
-        run: npm --prefix "functions" install
+          node-version: '14.x'
+      - name: Install deps (with cache)
+        uses: bahmutov/npm-install@v1
+        with:
+          working-directory: functions
       - name: Build
-        run: npm --prefix "functions" run build
+        run: npm run build
+        with:
+          working-directory: functions
       - name: Archive Production Artifact
         uses: actions/upload-artifact@master
         with:

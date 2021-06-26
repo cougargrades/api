@@ -1,0 +1,34 @@
+name: "Firebase CI"
+on: [push]
+jobs:
+  ci:
+    name: Build, lint, and test on Node ${{ matrix.node }} and ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node: ['14.x']
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Cache Firebase Emulator JARs
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/firebase/emulators/
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+      - name: Install deps (with cache)
+        uses: bahmutov/npm-install@v1
+        with:
+          working-directory: functions
+      - name: Build
+        run: npm run build
+        with:
+          working-directory: functions
+      - name: Run tests inside Firebase Emulator
+        uses: w9jds/firebase-action@v2.0.0
+        with:
+          args: firebase emulators:exec 'npm test'
+          working-directory: functions
