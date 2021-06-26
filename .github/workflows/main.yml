@@ -16,6 +16,7 @@ jobs:
         with:
           path: |
             ~/.cache/firebase/emulators/
+          key: ${{ runner.os }}-${{ hashFiles('functions/package-lock.json') }}
       - uses: actions/setup-node@v2
         with:
           node-version: '14.x'
