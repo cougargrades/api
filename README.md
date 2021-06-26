@@ -1,5 +1,7 @@
 # @cougargrades/api
 
+[![Continuous Integration](https://github.com/cougargrades/api/actions/workflows/ci.yml/badge.svg)](https://github.com/cougargrades/api/actions/workflows/ci.yml)
+
 [![Build and Deploy - Testing](https://github.com/cougargrades/api/actions/workflows/firebase.yml/badge.svg)](https://github.com/cougargrades/api/actions/workflows/firebase.yml) [![Build and Deploy - Production](https://github.com/cougargrades/api/actions/workflows/firebase-prod.yml/badge.svg)](https://github.com/cougargrades/api/actions/workflows/firebase-prod.yml)
 
 Serverless HTTP API for cougargrades.io
