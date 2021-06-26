@@ -29,8 +29,7 @@ jobs:
           working-directory: functions
       - name: Build
         run: npm run build
-        with:
-          working-directory: functions
+        working-directory: functions
       - name: Archive Production Artifact
         uses: actions/upload-artifact@master
         with:
