@@ -7,7 +7,7 @@
     "serve": "npm run build && firebase emulators:start",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
-    "test": "firebase emulators:exec 'jest'",
+    "test": "firebase emulators:exec 'npx jest'",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
