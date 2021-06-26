@@ -3,7 +3,8 @@
  * https://jestjs.io/docs/configuration
  */
 
-export default {
+/** @type { import('@jest/types/build/Config').InitialOptions } */
+module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   // All imported modules in your tests should be mocked automatically
