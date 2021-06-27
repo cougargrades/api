@@ -49,7 +49,7 @@ describe('whenUploadQueueAdded', () => {
       for await (let _ of rows.map(e => db.collection('upload_queue').add(e))) {}
       console.log('queue filled')
     })();
-  }, 5 * 60e3);
+  }, 1 * 60e3);
 
   afterAll(async () => {
     // Prevents "A worker process has failed to exit gracefully and has been force exited."
