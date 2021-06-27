@@ -25,6 +25,7 @@ jobs:
         id: npm-cache-dir
         run: |
           echo "::set-output name=dir::$(npm config get cache)"
+          echo "::set-output name=firebase_tool::$(npm config get prefix)/lib/node_modules/firebase-tools"
       # Cache stuff
       - name: Cache install data
         uses: actions/cache@v2
@@ -32,6 +33,7 @@ jobs:
           path: |
             ~/.cache/firebase/emulators/
             ${{ steps.npm-cache-dir.outputs.dir }}
+            ${{ steps.npm-cache-dir.outputs.firebase_tool }}
           key: ${{ runner.os }}-${{ hashFiles('functions/package-lock.json') }}
       # npm install
       - name: Install deps (with cache)
