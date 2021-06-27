@@ -1,4 +1,4 @@
-name: "Build and Deploy - Production"
+name: "Continuous Deployment (Production)"
 on:
   release:
     types: [created]
@@ -21,13 +21,16 @@ jobs:
         uses: actions/checkout@master
       - uses: actions/setup-node@v2
         with:
-          node-version: '15.x'
-      - name: Install Dependencies
-        run: npm --prefix "functions" install
+          node-version: '14.x'
+      - name: Install deps (with cache)
+        uses: bahmutov/npm-install@v1
+        with:
+          working-directory: functions
       - name: Build
-        run: npm --prefix "functions" run build
+        run: npm run build
+        working-directory: functions
       - name: Archive Production Artifact
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v2
         with:
           name: lib
           path: functions/lib
@@ -36,5 +39,5 @@ jobs:
         with:
           args: deploy --only functions,firestore
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          PROJECT_ID: ${{ secrets.PRODUCTION_PROJECT_ID }}
+          FIREBASE_TOKEN: ${{ secrets.PROD_FIREBASE_TOKEN }}
+          PROJECT_ID: ${{ secrets.PROD_PROJECT_ID }}
