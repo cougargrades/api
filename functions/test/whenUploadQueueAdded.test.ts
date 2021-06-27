@@ -19,7 +19,7 @@ describe('whenUploadQueueAdded', () => {
 
       // Read data in from CSV file
       let rows: GradeDistributionCSVRow[] = [];
-      for (const record of csv('sample001.csv')) {
+      for (const record of csv('sample002.csv')) {
         let value = GDR.tryFromRaw(record);
         if(value !== null) rows.push(value);
       }
@@ -39,8 +39,8 @@ describe('whenUploadQueueAdded', () => {
         // detect when upload has finished
         if(rows.length === totalRemovals && rows.length === totalAdditions) {
           // Prevents "A worker process has failed to exit gracefully and has been force exited."
-          unsubscribe(); 
           done();
+          unsubscribe();
         }
       });
 
