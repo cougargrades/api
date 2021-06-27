@@ -50,13 +50,8 @@ jobs:
         working-directory: functions
         run: npm test
       # Save coverage report
-      - name: Archive Coverage Report
-        uses: actions/upload-artifact@v2
-        with:
-          name: Coverage Report
-          path: functions/coverage
-      # - name: Run tests inside Firebase Emulator
-      #   uses: w9jds/firebase-action@v2.0.0
-      #   with:
-      #     args: firebase emulators:exec 'npm test'
-      #     working-directory: functions
+      #- name: Archive Coverage Report
+      #  uses: actions/upload-artifact@v2
+      #  with:
+      #    name: Coverage Report
+      #    path: functions/coverage

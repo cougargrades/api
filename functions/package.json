@@ -19,11 +19,12 @@
   "dependencies": {
     "@cougargrades/types": "0.0.69",
     "firebase-admin": "^9.2.0",
-    "firebase-functions": "^3.11.0",
+    "firebase-functions": "^3.14.1",
     "typescript-is": "^0.17.1"
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",
+    "csv-parse": "^4.16.0",
     "jest": "^27.0.5",
     "ts-jest": "^27.0.3",
     "ttypescript": "^1.5.12",
