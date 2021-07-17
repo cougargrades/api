@@ -1,64 +1,51 @@
-
-import { db, firebase } from '../src/_firebaseHelper'
-import { GradeDistributionCSVRow as GDR } from '@cougargrades/types'
-import { GradeDistributionCSVRow } from '@cougargrades/types/dist/GradeDistributionCSVRow'
-import { csv, deleteCollections } from './util'
+import { db } from '../src/_firebaseHelper'
+import { firebaseCleanup, loadSampleData } from './util'
 
 describe('whenUploadQueueAdded', () => {
+  describe('sample002.csv', () => {
+    /**
+     * Load sample data into the database before running the tests
+     * Allows a 1 minute timeout
+     */
+    beforeAll((done) => {
+      loadSampleData('sample002.csv', done);
+    }, 1 * 60e3);
 
-  /**
-   * Load sample data into the database before running the tests
-   * Allows a 1 minute timeout
-   */
-  beforeAll((done) => {
-    (async () => {
-      // Clear database
-      await deleteCollections(['catalog', 'sections', 'instructors', 'meta', 'groups'])
+    afterAll(async () => {
+      await firebaseCleanup();
+    })
 
-      // Read data in from CSV file
-      let rows: GradeDistributionCSVRow[] = [];
-      for (const record of csv('sample002.csv')) {
-        let value = GDR.tryFromRaw(record);
-        if(value !== null) rows.push(value);
-      }
+    test('upload_queue is empty', async () => {
+      let docs = await db.collection('upload_queue').listDocuments();
+      expect(docs.length).toEqual(0)
+    })
 
-      // store a counter
-      let totalRemovals = 0;
-      let totalAdditions = 0;
+    test('sections is not empty', async () => {
+      let docs = await db.collection('sections').listDocuments();
+      expect(docs.length).toBeGreaterThan(0)
+    })
 
-      // respond to database changes
-      const unsubscribe = db.collection('upload_queue').onSnapshot(snapshot => {
-        let numRemovals = snapshot.docChanges().filter(e => e.type === 'removed').length;
-        let numAdditions = snapshot.docChanges().filter(e => e.type === 'added').length;
-        totalRemovals += numRemovals;
-        totalAdditions += numAdditions;
-
-        // detect when upload has finished
-        if(rows.length === totalRemovals && rows.length === totalAdditions) {
-          // Prevents "A worker process has failed to exit gracefully and has been force exited."
-          unsubscribe();
-          done();
-        }
-      });
-
-      // actually start upload in parallel
-      await Promise.all(rows.map(e => db.collection('upload_queue').add(e)))
-    })();
-  }, 1 * 60e3);
-
-  afterAll(async () => {
-    // Prevents "A worker process has failed to exit gracefully and has been force exited."
-    await db.terminate();
-    await firebase.delete();
-  })
-
-  test('upload_queue is empty', async () => {
-    let docs = await db.collection('upload_queue').listDocuments();
-    expect(docs.length).toEqual(0)
-  })
-
-  test('sections is not empty', async () => {
-    let docs = await db.collection('sections').listDocuments();
-    expect(docs.length).toBeGreaterThan(0)
+    test('COSC 1306', async () => {
+      let doc = await db.doc('/catalog/COSC 1306').get();
+      expect(doc.exists).toEqual(true);
+      expect(doc.data()).toHaveProperty('catalogNumber', '1306')
+      expect(doc.data()).toHaveProperty('department', 'COSC')
+      expect(doc.data()).toHaveProperty('description', 'Computer Science & Program')
+      expect(doc.data()).toHaveProperty('enrollment.totalA', 154)
+      expect(doc.data()).toHaveProperty('enrollment.totalB', 74)
+      expect(doc.data()).toHaveProperty('enrollment.totalC', 10)
+      expect(doc.data()).toHaveProperty('enrollment.totalD', 0)
+      expect(doc.data()).toHaveProperty('enrollment.totalEnrolled', 286)
+      expect(doc.data()).toHaveProperty('enrollment.totalF', 0)
+      expect(doc.data()).toHaveProperty('enrollment.totalQ', 48)
+      expect(doc.data()).toHaveProperty('firstTaught', 202101)
+      expect(doc.data()).toHaveProperty('GPA')
+      expect(doc.data()!.GPA.average).toBeCloseTo(1.4)
+      expect(doc.data()!.GPA.maximum).toBeCloseTo(2)
+      expect(doc.data()!.GPA.median).toBeCloseTo(0)
+      expect(doc.data()!.GPA.minimum).toBeCloseTo(1)
+      expect(doc.data()!.GPA.range).toBeCloseTo(1)
+      expect(doc.data()!.GPA.standardDeviation).toBeCloseTo(0.489)
+    })
   })
 })

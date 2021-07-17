@@ -7,7 +7,8 @@
     "serve": "npm run build && firebase emulators:start",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
-    "test": "npm run build && firebase emulators:exec 'jest'",
+    "test": "npm run build && firebase emulators:exec --export-on-exit emudata 'jest'",
+    "test:viewdb": "firebase emulators:start --import emudata",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
