@@ -2,6 +2,7 @@ import { db } from '../src/_firebaseHelper'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as csvParser from 'csv-parse/lib/sync'
+import { path as root } from 'app-root-path'
 
 /**
  * Shortcut function for parsing CSV files
@@ -9,7 +10,7 @@ import * as csvParser from 'csv-parse/lib/sync'
  * @returns 
  */
 export function csv(fileName: string): any[] {
-  return csvParser(fs.readFileSync(path.resolve(__dirname, fileName)), { columns: true });
+  return csvParser(fs.readFileSync(path.resolve(root, 'test', fileName)), { columns: true });
 }
 
 /**
@@ -21,7 +22,7 @@ export async function deleteCollection(name: string): Promise<void> {
   let docs = await db.collection(name).listDocuments()
 
   // delete in parallel
-  for await (let _ of docs.map(e => e.delete())) {}
+  await Promise.all(docs.map(e => e.delete()))
 
   return;
 }
@@ -33,6 +34,6 @@ export async function deleteCollection(name: string): Promise<void> {
  */
 export async function deleteCollections(collections: string[]): Promise<void> {
   // delete in parallel
-  for await (let _ of collections.map(e => deleteCollection(e))) {}
+  await Promise.all(collections.map(e => deleteCollection(e)))
   return;
 }

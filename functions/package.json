@@ -7,7 +7,7 @@
     "serve": "npm run build && firebase emulators:start",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
-    "test": "firebase emulators:exec 'jest'",
+    "test": "npm run build && firebase emulators:exec 'jest --detectOpenHandles'",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
@@ -23,7 +23,9 @@
     "typescript-is": "^0.17.1"
   },
   "devDependencies": {
+    "@types/app-root-path": "^1.2.4",
     "@types/jest": "^26.0.23",
+    "app-root-path": "^3.0.0",
     "csv-parse": "^4.16.0",
     "jest": "^27.0.5",
     "ts-jest": "^27.0.3",
