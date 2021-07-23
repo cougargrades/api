@@ -311,7 +311,7 @@ export const whenUploadQueueAdded = functions
         if (courseSnap.exists) {
 
           // get enrollment values for JUST THIS record and NOT the running total
-          const { totalA, totalB, totalC, totalD, totalF, totalQ, totalEnrolled } = GDR.toCourse(record).enrollment;
+          const { totalA, totalB, totalC, totalD, totalF, totalS, totalNCR, totalW, totalEnrolled } = GDR.toCourse(record).enrollment;
 
           // stage our updates
           courseToUpdate = {
@@ -320,7 +320,9 @@ export const whenUploadQueueAdded = functions
             'enrollment.totalC': FieldValue.increment(totalC),
             'enrollment.totalD': FieldValue.increment(totalD),
             'enrollment.totalF': FieldValue.increment(totalF),
-            'enrollment.totalQ': FieldValue.increment(totalQ),
+            'enrollment.totalS': FieldValue.increment(totalS),
+            'enrollment.totalNCR': FieldValue.increment(totalNCR),
+            'enrollment.totalW': FieldValue.increment(totalW),
             'enrollment.totalEnrolled': FieldValue.increment(totalEnrolled),
             ...courseToUpdate
           };
@@ -358,7 +360,7 @@ export const whenUploadQueueAdded = functions
 
         if (instructorSnap.exists) {
           // get enrollment values for JUST THIS record and NOT the running total
-          const { totalA, totalB, totalC, totalD, totalF, totalQ, totalEnrolled } = GDR.toInstructor(record).enrollment;
+          const { totalA, totalB, totalC, totalD, totalF, totalS, totalNCR, totalW, totalEnrolled } = GDR.toInstructor(record).enrollment;
 
           // stage our updates
           instructorToUpdate = {
@@ -367,7 +369,9 @@ export const whenUploadQueueAdded = functions
             'enrollment.totalC': FieldValue.increment(totalC),
             'enrollment.totalD': FieldValue.increment(totalD),
             'enrollment.totalF': FieldValue.increment(totalF),
-            'enrollment.totalQ': FieldValue.increment(totalQ),
+            'enrollment.totalS': FieldValue.increment(totalS),
+            'enrollment.totalNCR': FieldValue.increment(totalNCR),
+            'enrollment.totalW': FieldValue.increment(totalW),
             'enrollment.totalEnrolled': FieldValue.increment(totalEnrolled),
             ...instructorToUpdate
           };
