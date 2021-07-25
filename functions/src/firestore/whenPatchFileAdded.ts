@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import { db } from '../_firebaseHelper';
+import { db, FieldValue } from '../_firebaseHelper';
 import { is } from 'typescript-is';
 import { Patchfile as PF, PatchfileUtil } from '@cougargrades/types';
 import Patchfile = PF.Patchfile;
@@ -15,7 +15,7 @@ export const whenPatchFileAdded = functions
       const selfData = snapshot.data();
       if (is<Patchfile>(selfData)) {
         // awaits transaction of Patchfile operation sequence
-        await PatchfileUtil.executePatchFile(db, selfData);
+        await PatchfileUtil.executePatchFile(db, FieldValue as any, selfData);
 
         // does another transaction that only does 1 thing: deletes this self reference
         // because we're using async/await, if a rejected promise is thrown, it appears as an exception thrown
