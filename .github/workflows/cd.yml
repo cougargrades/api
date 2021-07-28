@@ -1,8 +1,7 @@
-name: "Continuous Deployment (Testing)"
+name: "Continuous Deployment"
 on:
   push:
-    branches:
-      - master
+    branches: ["master","next"]
 jobs:
   prep:
     name: Cancel Previous Runs
@@ -16,6 +15,8 @@ jobs:
     name: Deploy
     needs: prep
     runs-on: ubuntu-latest
+    environment:
+      name: Staging
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
