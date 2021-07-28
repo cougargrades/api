@@ -16,7 +16,8 @@ jobs:
     needs: prep
     runs-on: ubuntu-latest
     environment:
-      name: Staging
+      # see: https://github.com/actions/runner/issues/409#issuecomment-752775072
+      name: ${{ github.ref == 'refs/heads/master' && 'Production' || 'Staging' }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
