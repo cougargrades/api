@@ -184,6 +184,7 @@ export const whenUploadQueueAdded = functions
 
       groupToUpdate = {
         courses: FieldValue.arrayUnion(courseRef) as any,
+        sections: FieldValue.arrayUnion(sectionRef) as any,
         // include already added fields
         ...groupToUpdate
       };
