@@ -62,6 +62,17 @@ export const whenUploadQueueAdded = functions
       const instructorSnap = await txn.get(instructorRef);
       const groupSnap = await txn.get(groupRef);
       const catalogMetaSnap = await txn.get(catalogMetaRef);
+
+      // bonus reads: check which core curriculum groups exist
+      const coreCurriculumIdsThatExist: string[] = [];
+      // verify that these groups exist
+      for(const coreCourseRef of coreCurriculumRefs) {
+        // do a database get
+        const snap = await txn.get(coreCourseRef)
+        // if it exists, save the ID
+        if(snap.exists) coreCurriculumIdsThatExist.push(snap.id);
+      }
+
       // denoted variables to cache the result from the snapshot
       let courseData: Course;
       let sectionData: Section;
@@ -214,7 +225,7 @@ export const whenUploadQueueAdded = functions
          */
         if (courseSnap.exists) {
           // check if record has missing AVG
-          if (record.AVG_GPA !== undefined) {
+          if (record.AVG_GPA !== null) {
             // include in GPA
             GPA.include(courseData.GPA, record.AVG_GPA);
 
@@ -270,7 +281,7 @@ export const whenUploadQueueAdded = functions
          */
         if (instructorSnap.exists) {
           // check if record has missing AVG
-          if (record.AVG_GPA !== undefined) {
+          if (record.AVG_GPA !== null) {
             // include in GPA
             GPA.include(instructorData.GPA, record.AVG_GPA);
 
@@ -411,12 +422,16 @@ export const whenUploadQueueAdded = functions
         (instructorData.departments as any)[record.SUBJECT] === undefined
           ? 1
           : FieldValue.increment(1);
-
-      // update core curriculum groups with this course
+     
+      // update the core curriculum groups that exist
       for(const coreCourseRef of coreCurriculumRefs) {
-        await txn.update(coreCourseRef, {
-          sections: FieldValue.arrayUnion(sectionRef) as any,
-        });
+        // check if it exists
+        if(coreCurriculumIdsThatExist.includes(coreCourseRef.id)) {
+          // update only groups that exist
+          await txn.update(coreCourseRef, {
+            sections: FieldValue.arrayUnion(sectionRef) as any,
+          });
+        }
       }
       
       /**
