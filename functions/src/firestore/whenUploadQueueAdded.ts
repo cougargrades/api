@@ -14,6 +14,9 @@ import { GradeDistributionCSVRow } from '@cougargrades/types/dist/GradeDistribut
 // preconfigured Firestore intance
 import { db } from '../_firebaseHelper';
 
+// makes it easier to integrate public data
+import { getCoreCurriculumDocRefs } from './_dataHelper';
+
 // the actual function which is the focus of this file
 export const whenUploadQueueAdded = functions
   .runWith({ timeoutSeconds: 540 })
@@ -51,6 +54,7 @@ export const whenUploadQueueAdded = functions
         .collection('groups')
         .doc(GDR.getGroupMoniker(record));
       const catalogMetaRef = db.collection('meta').doc('catalog');
+      const coreCurriculumRefs = getCoreCurriculumDocRefs(GDR.getCourseMoniker(record));
 
       // perform all reads
       const courseSnap = await txn.get(courseRef);
@@ -408,6 +412,13 @@ export const whenUploadQueueAdded = functions
           ? 1
           : FieldValue.increment(1);
 
+      // update core curriculum groups with this course
+      for(const coreCourseRef of coreCurriculumRefs) {
+        await txn.update(coreCourseRef, {
+          sections: FieldValue.arrayUnion(sectionRef) as any,
+        });
+      }
+      
       /**
        * ----------------
        * Execute transaction

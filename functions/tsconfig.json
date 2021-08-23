@@ -9,6 +9,7 @@
     "outDir": "lib",
     "sourceMap": true,
     "strict": true,
+    "resolveJsonModule": true,
     "target": "es2017"
   },
   "compileOnSave": true,
