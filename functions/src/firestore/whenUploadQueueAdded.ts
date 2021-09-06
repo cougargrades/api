@@ -450,7 +450,7 @@ export const whenUploadQueueAdded = functions
 
     try {
       await transaction;
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       // Error: 10 ABORTED: Too much contention on these documents. Please try again.
       // see: https://github.com/cougargrades/api-2.0.0/issues/24
