@@ -16,16 +16,46 @@
       "**/node_modules/**"
     ],
     "rewrites": [
-      { "source": "/helloWorld", "function": "helloWorld" },
-      { "source": "/catalog/getAllCourseNames", "function": "catalog-getAllCourseNames" },
-      { "source": "/catalog/getCourseByName", "function": "catalog-getCourseByName" },
-      { "source": "/catalog/getCourses", "function": "catalog-getCourses" },
-      { "source": "/catalog/getInstructorsForCourse", "function": "catalog-getInstructorsForCourse" },
-      { "source": "/catalog/getSectionsForCourse", "function": "catalog-getSectionsForCourse" },
-      { "source": "/instructors/getAllInstructorNames", "function": "instructors-getAllInstructorNames" },
-      { "source": "/instructors/getInstructorByName", "function": "instructors-getInstructorByName" },
-      { "source": "/instructors/getInstructors", "function": "instructors-getInstructors" },
-      { "source": "/groups/getAllGroups", "function": "groups-getAllGroups" }
+      {
+        "source": "/helloWorld",
+        "function": "helloWorld"
+      },
+      {
+        "source": "/catalog/getAllCourseNames",
+        "function": "catalog-getAllCourseNames"
+      },
+      {
+        "source": "/catalog/getCourseByName",
+        "function": "catalog-getCourseByName"
+      },
+      {
+        "source": "/catalog/getCourses",
+        "function": "catalog-getCourses"
+      },
+      {
+        "source": "/catalog/getInstructorsForCourse",
+        "function": "catalog-getInstructorsForCourse"
+      },
+      {
+        "source": "/catalog/getSectionsForCourse",
+        "function": "catalog-getSectionsForCourse"
+      },
+      {
+        "source": "/instructors/getAllInstructorNames",
+        "function": "instructors-getAllInstructorNames"
+      },
+      {
+        "source": "/instructors/getInstructorByName",
+        "function": "instructors-getInstructorByName"
+      },
+      {
+        "source": "/instructors/getInstructors",
+        "function": "instructors-getInstructors"
+      },
+      {
+        "source": "/groups/getAllGroups",
+        "function": "groups-getAllGroups"
+      }
     ]
   },
   "emulators": {
@@ -41,5 +71,8 @@
     "ui": {
       "enabled": true
     }
+  },
+  "extensions": {
+    "firestore-algolia-search": "algolia/firestore-algolia-search@0.5.14"
   }
 }
